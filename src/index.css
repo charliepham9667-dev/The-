@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background-primary text-slate-100 antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-background-secondary border border-border rounded-lg;
+  }
+}
