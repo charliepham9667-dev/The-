@@ -1,12 +1,16 @@
-import { DollarSign, Users, CreditCard, Target, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { DollarSign, Users, CreditCard, Target, Loader2, Settings, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
-import { useKPISummary } from '../../hooks/useDashboardData';
+import { useKPISummary, useSyncStatus } from '../../hooks/useDashboardData';
 import { KPICard } from './KPICard';
 import { WeeklySalesTrend } from './WeeklySalesTrend';
 import { ServiceReviews } from './ServiceReviews';
 import { MonthlyPerformance } from './MonthlyPerformance';
 import { RealTimeStaffing } from './RealTimeStaffing';
 import { ComplianceAlerts } from './ComplianceAlerts';
+import { TargetManager } from './TargetManager';
+import { RevenueVelocity } from './RevenueVelocity';
+import { ExecutiveSummary } from './ExecutiveSummary';
 
 // Format large numbers for display
 function formatVND(value: number): string {
@@ -19,18 +23,44 @@ function formatVND(value: number): string {
 export function OwnerOverview() {
   const profile = useAuthStore((s) => s.profile);
   const firstName = profile?.fullName?.split(' ')[0] || 'Charlie';
+  const [showTargetManager, setShowTargetManager] = useState(false);
   
   const { data: kpi, isLoading, error } = useKPISummary();
+  const { data: syncStatus } = useSyncStatus();
 
   return (
-    <div className="space-y-6">
-      {/* Greeting */}
-      <div>
-        <h1 className="text-3xl font-semibold text-white">Hello, {firstName}</h1>
+    <div className="space-y-4 md:space-y-6">
+      {/* Greeting + Sync Status - responsive text and layout */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <h1 className="text-2xl md:text-3xl font-semibold text-white">Hello, {firstName}</h1>
+        
+        {/* Sync Status Indicator */}
+        {syncStatus && (
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs w-fit ${
+            syncStatus.isStale 
+              ? 'bg-amber-500/20 text-amber-400' 
+              : 'bg-emerald-500/20 text-emerald-400'
+          }`}>
+            {syncStatus.isStale ? (
+              <AlertTriangle className="h-3 w-3" />
+            ) : (
+              <RefreshCw className="h-3 w-3" />
+            )}
+            {syncStatus.lastSyncAt ? (
+              syncStatus.hoursAgo === 0 
+                ? 'Synced recently' 
+                : syncStatus.hoursAgo === 1 
+                  ? 'Synced 1 hour ago'
+                  : `Synced ${syncStatus.hoursAgo}h ago`
+            ) : (
+              'Not synced'
+            )}
+          </div>
+        )}
       </div>
 
-      {/* KPI Cards Row */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* KPI Cards Row - 1 col on xs, 2 cols on sm+, 4 cols on lg+ */}
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {isLoading ? (
           <div className="col-span-full flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
@@ -65,56 +95,83 @@ export function OwnerOverview() {
               iconBgColor="bg-blue-500"
               trend={(kpi?.avgSpend.trend || 0) >= 0 ? 'up' : 'down'}
             />
-            <TargetMetCard percentage={kpi?.targetMet.percentage || 0} isOnTrack={kpi?.targetMet.isOnTrack || false} />
+            <TargetMetCard 
+              percentage={kpi?.targetMet.percentage || 0} 
+              isOnTrack={kpi?.targetMet.isOnTrack || false} 
+              onEdit={() => setShowTargetManager(true)}
+            />
           </>
         )}
       </div>
 
-      {/* Charts Row */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      {/* Charts Row - stack on mobile, 2+1 on lg+ */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+        <div className="md:col-span-2 lg:col-span-2 flex">
           <WeeklySalesTrend />
         </div>
-        <ServiceReviews />
+        {/* Monthly Performance - hidden on mobile, visible on md+ */}
+        <div className="hidden md:flex">
+          <MonthlyPerformance />
+        </div>
       </div>
 
-      {/* Bottom Widgets Row */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <MonthlyPerformance />
-        <RealTimeStaffing />
-        <ComplianceAlerts />
+      {/* Revenue Velocity + Executive Summary Row - stack on mobile */}
+      <div className="grid gap-4 md:grid-cols-2 items-stretch">
+        <div className="flex"><RevenueVelocity /></div>
+        {/* Executive Summary - hidden on mobile, visible on md+ */}
+        <div className="hidden md:flex"><ExecutiveSummary /></div>
       </div>
+
+      {/* Bottom Widgets Row - stack on mobile, 3 cols on lg+ */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+        <div className="flex"><ServiceReviews /></div>
+        <div className="flex"><RealTimeStaffing /></div>
+        {/* Compliance - hidden on mobile, visible on md+ */}
+        <div className="hidden md:flex"><ComplianceAlerts /></div>
+      </div>
+
+      {/* Target Manager Modal */}
+      <TargetManager isOpen={showTargetManager} onClose={() => setShowTargetManager(false)} />
     </div>
   );
 }
 
 // Target Met card with circular progress indicator
-function TargetMetCard({ percentage, isOnTrack }: { percentage: number; isOnTrack: boolean }) {
+function TargetMetCard({ percentage, isOnTrack, onEdit }: { percentage: number; isOnTrack: boolean; onEdit: () => void }) {
   const strokeColor = isOnTrack ? '#22c55e' : '#f59e0b';
   
   return (
-    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-5">
+    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-5 min-h-[100px] md:min-h-[120px]">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
-            TARGET MET
-          </p>
-          <div className="mt-2 flex items-center gap-3">
-            {/* Circular Progress */}
-            <div className="relative h-12 w-12">
-              <svg className="h-12 w-12 -rotate-90 transform">
+          <div className="flex items-center gap-2">
+            <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-slate-400">
+              TARGET MET
+            </p>
+            <button
+              onClick={onEdit}
+              className="text-slate-500 hover:text-white transition-colors"
+              title="Manage targets"
+            >
+              <Settings className="h-3 w-3 md:h-3.5 md:w-3.5" />
+            </button>
+          </div>
+          <div className="mt-1 md:mt-2 flex items-center gap-2 md:gap-3">
+            {/* Circular Progress - smaller on mobile */}
+            <div className="relative h-10 w-10 md:h-12 md:w-12">
+              <svg className="h-10 w-10 md:h-12 md:w-12 -rotate-90 transform">
                 <circle
-                  cx="24"
-                  cy="24"
-                  r="20"
+                  cx="50%"
+                  cy="50%"
+                  r="40%"
                   stroke="#374151"
                   strokeWidth="4"
                   fill="none"
                 />
                 <circle
-                  cx="24"
-                  cy="24"
-                  r="20"
+                  cx="50%"
+                  cy="50%"
+                  r="40%"
                   stroke={strokeColor}
                   strokeWidth="4"
                   fill="none"
@@ -122,17 +179,17 @@ function TargetMetCard({ percentage, isOnTrack }: { percentage: number; isOnTrac
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white">
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] md:text-xs font-semibold text-white">
                 {percentage}%
               </span>
             </div>
-            <span className="text-xl font-bold text-white">
+            <span className="text-lg md:text-xl font-bold text-white">
               {isOnTrack ? 'On Track' : 'Behind'}
             </span>
           </div>
         </div>
-        <div className={`rounded-lg p-2.5 ${isOnTrack ? 'bg-emerald-500' : 'bg-amber-500'}`}>
-          <Target className="h-5 w-5 text-white" />
+        <div className={`rounded-lg p-2 md:p-2.5 ${isOnTrack ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+          <Target className="h-4 w-4 md:h-5 md:w-5 text-white" />
         </div>
       </div>
     </div>

@@ -7,89 +7,89 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Legend,
+  ReferenceLine,
 } from 'recharts';
-import { Loader2 } from 'lucide-react';
-import { useWeeklySales } from '../../hooks/useDashboardData';
-
-// Mock data for demonstration - will be replaced with real data
-const mockWeeklyData = [
-  { day: 'Tue', actual: 28, lastYear: 18, projected: 30 },
-  { day: 'Wed', actual: 32, lastYear: 22, projected: 35 },
-  { day: 'Thu', actual: 38, lastYear: 25, projected: 36 },
-  { day: 'Fri', actual: 45, lastYear: 32, projected: 42 },
-  { day: 'Sat', actual: 52, lastYear: 38, projected: 55 },
-  { day: 'Sun', actual: 48, lastYear: 35, projected: 50 },
-  { day: 'Mon', actual: 35, lastYear: 28, projected: 38 },
-];
+import { Loader2, TrendingUp, TrendingDown } from 'lucide-react';
+import { useWeeklySales, useRevenueVelocity } from '../../hooks/useDashboardData';
 
 export function WeeklySalesTrend() {
   const [showActual, setShowActual] = useState(true);
   const [showLastYear, setShowLastYear] = useState(true);
-  const [showProjected, setShowProjected] = useState(true);
 
-  const { data: apiData, isLoading } = useWeeklySales();
+  const { data: weeklyData, isLoading } = useWeeklySales();
+  const { data: velocityData } = useRevenueVelocity();
 
-  // Use API data if available, otherwise use mock data
-  const weeklyData = apiData?.length ? apiData : mockWeeklyData;
+  // Calculate week-over-week change
+  const thisWeekTotal = (weeklyData || []).reduce((sum, d) => sum + (d.actual || 0), 0);
+  const lastYearTotal = (weeklyData || []).reduce((sum, d) => sum + (d.lastYear || 0), 0);
+  const wowChange = lastYearTotal > 0 ? ((thisWeekTotal - lastYearTotal) / lastYearTotal) * 100 : 0;
+  
+  // Daily target in millions (for chart reference line)
+  const dailyTargetM = velocityData ? Math.round(velocityData.dailyTargetPace / 1000000) : 24;
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6 h-[380px] flex items-center justify-center">
+      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
   }
 
+  if (!weeklyData || weeklyData.length === 0) {
+    return (
+      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex items-center justify-center">
+        <p className="text-slate-400">No sales data available</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6 h-[380px]">
+    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white">Weekly Sales Trends</h3>
-        <div className="flex gap-2">
-          {/* Actual Toggle */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 md:mb-6">
+        <div className="flex items-center gap-2 md:gap-3">
+          <h3 className="text-base md:text-lg font-semibold text-white">Weekly Sales Trends</h3>
+          {/* Week-over-Week Change Indicator */}
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+            wowChange >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+          }`}>
+            {wowChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            {wowChange >= 0 ? '+' : ''}{wowChange.toFixed(1)}% vs LY
+          </div>
+        </div>
+        <div className="flex gap-1.5 md:gap-2">
+          {/* Actual Toggle - responsive with touch-friendly sizing */}
           <button
             onClick={() => setShowActual(!showActual)}
-            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 md:gap-2 rounded-full px-2.5 py-2 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium transition-all min-h-[36px] md:min-h-0 ${
               showActual
                 ? 'bg-[#ff6b35] text-white shadow-lg shadow-[#ff6b35]/20'
                 : 'bg-transparent text-slate-400 border border-[#374151] hover:border-[#ff6b35]/50'
             }`}
           >
             <span className={`h-2 w-2 rounded-full ${showActual ? 'bg-white' : 'bg-[#ff6b35]'}`} />
-            Actual
+            <span className="hidden xs:inline">Actual</span>
+            <span className="xs:hidden">Now</span>
           </button>
 
-          {/* Last Year Toggle */}
+          {/* Last Year Toggle - responsive with touch-friendly sizing */}
           <button
             onClick={() => setShowLastYear(!showLastYear)}
-            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 md:gap-2 rounded-full px-2.5 py-2 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium transition-all min-h-[36px] md:min-h-0 ${
               showLastYear
                 ? 'bg-[#8b5cf6] text-white shadow-lg shadow-[#8b5cf6]/20'
                 : 'bg-transparent text-slate-400 border border-[#374151] hover:border-[#8b5cf6]/50'
             }`}
           >
             <span className={`h-2 w-2 rounded-full ${showLastYear ? 'bg-white' : 'bg-[#8b5cf6]'}`} />
-            Last Year
-          </button>
-
-          {/* Projected Toggle */}
-          <button
-            onClick={() => setShowProjected(!showProjected)}
-            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
-              showProjected
-                ? 'bg-[#374151] text-white'
-                : 'bg-transparent text-slate-400 border border-[#374151] hover:border-slate-500'
-            }`}
-          >
-            <span className={`h-2 w-2 rounded-full ${showProjected ? 'bg-white' : 'bg-slate-400'}`} />
-            Projected
+            <span className="hidden xs:inline">Last Year</span>
+            <span className="xs:hidden">LY</span>
           </button>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="h-[280px]">
+      <div className="flex-1 min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
@@ -103,14 +103,17 @@ export function WeeklySalesTrend() {
                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
                 <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
               </linearGradient>
-              {/* Gradient for Projected */}
-              <linearGradient id="gradientProjected" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6b7280" stopOpacity={0.1} />
-                <stop offset="95%" stopColor="#6b7280" stopOpacity={0} />
-              </linearGradient>
             </defs>
 
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+
+            {/* Daily Target Reference Line */}
+            <ReferenceLine 
+              y={dailyTargetM} 
+              stroke="#22c55e" 
+              strokeDasharray="5 5"
+              strokeWidth={2}
+            />
 
             <XAxis
               dataKey="day"
@@ -142,26 +145,12 @@ export function WeeklySalesTrend() {
                 const labels: Record<string, string> = {
                   actual: 'This Week',
                   lastYear: 'Last Year',
-                  projected: 'Projected',
                 };
                 return [`${value}M đ`, labels[name] || name];
               }}
             />
 
-            {/* Projected Area - Render first (bottom layer) */}
-            {showProjected && (
-              <Area
-                type="monotone"
-                dataKey="projected"
-                stroke="#6b7280"
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                fill="url(#gradientProjected)"
-                name="projected"
-              />
-            )}
-
-            {/* Last Year Area - Middle layer */}
+            {/* Last Year Area - Bottom layer */}
             {showLastYear && (
               <Area
                 type="monotone"
@@ -194,7 +183,7 @@ export function WeeklySalesTrend() {
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-[#ff6b35]" />
             <span>This Week: <span className="text-white font-medium">
-              {weeklyData.reduce((sum, d) => sum + (d.actual || 0), 0)}M đ
+              {thisWeekTotal}M đ
             </span></span>
           </div>
         )}
@@ -202,18 +191,16 @@ export function WeeklySalesTrend() {
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-[#8b5cf6]" />
             <span>Last Year: <span className="text-white font-medium">
-              {weeklyData.reduce((sum, d) => sum + (d.lastYear || 0), 0)}M đ
+              {lastYearTotal}M đ
             </span></span>
           </div>
         )}
-        {showProjected && (
-          <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-slate-500" />
-            <span>Projected: <span className="text-white font-medium">
-              {weeklyData.reduce((sum, d) => sum + (d.projected || 0), 0)}M đ
-            </span></span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <div className="h-0.5 w-4 bg-emerald-500" style={{ borderStyle: 'dashed' }} />
+          <span>Daily Target: <span className="text-white font-medium">
+            {dailyTargetM}M đ
+          </span></span>
+        </div>
       </div>
     </div>
   );

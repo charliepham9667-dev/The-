@@ -18,10 +18,12 @@ const variantClasses: Record<ButtonVariant, string> = {
     'bg-transparent text-slate-200 hover:bg-background-secondary border border-transparent'
 };
 
+// Responsive size classes with mobile-first approach
+// Mobile: touch-friendly minimum 44px height, tablet+: standard sizing
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-5 py-3 text-base'
+  sm: 'px-3 py-2 text-xs min-h-[40px] md:px-3 md:py-1.5 md:text-sm md:min-h-0',
+  md: 'px-4 py-2.5 text-sm min-h-[44px] md:px-4 md:py-2 md:min-h-0',
+  lg: 'px-5 py-3 text-base min-h-[48px] md:px-5 md:py-3 md:min-h-0'
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

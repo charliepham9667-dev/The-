@@ -104,23 +104,23 @@ export function ShiftCalendar({ weekStart, shifts, isLoading, onEditShift }: Shi
                     <button
                       key={shift.id}
                       onClick={() => onEditShift(shift.id)}
-                      className={`w-full rounded-lg border-l-2 p-2 text-left transition-colors hover:bg-[#374151]/50 ${
+                      className={`w-full rounded-lg border-l-2 p-2.5 md:p-2 text-left transition-colors hover:bg-[#374151]/50 min-h-[48px] md:min-h-0 ${
                         statusColors[shift.status] || statusColors.scheduled
                       }`}
                     >
-                      <div className="flex items-center gap-1 mb-1">
-                        <User className="h-3 w-3 text-slate-400" />
+                      <div className="flex items-center gap-1.5 md:gap-1 mb-1">
+                        <User className="h-3.5 w-3.5 md:h-3 md:w-3 text-slate-400 flex-shrink-0" />
                         <span className="text-xs font-medium text-white truncate">
                           {shift.staffName}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3 text-slate-500" />
-                        <span className="text-[10px] text-slate-400">
+                      <div className="flex items-center gap-1.5 md:gap-1">
+                        <Clock className="h-3.5 w-3.5 md:h-3 md:w-3 text-slate-500 flex-shrink-0" />
+                        <span className="text-[11px] md:text-[10px] text-slate-400">
                           {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
                         </span>
                       </div>
-                      <span className={`text-[10px] capitalize ${roleColors[shift.role] || roleColors.default}`}>
+                      <span className={`text-[11px] md:text-[10px] capitalize ${roleColors[shift.role] || roleColors.default}`}>
                         {shift.role}
                       </span>
                     </button>

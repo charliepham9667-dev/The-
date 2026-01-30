@@ -1,114 +1,302 @@
-import { TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { 
+  Loader2, 
+  Calendar, 
+  AlertCircle, 
+  ChevronDown,
+  Download,
+  Filter
+} from 'lucide-react';
+import { usePLData, usePLComparison, usePLYears, usePLMonthData } from '../../hooks/usePLData';
+import {
+  RevenueMixChart,
+  ExpenseBreakdownChart,
+  ProfitMarginGauge,
+  PLAlertsPanel,
+  ProfitabilityTrendChart,
+  LineItemPerformanceTable,
+  FinancialKPICards,
+  CFOExecutiveSummary
+} from '../../components/finance';
 
-const plData = {
-  revenue: { value: 794000000, change: 12.5, label: 'Total Revenue' },
-  cogs: { value: 238000000, change: -3.2, label: 'Cost of Goods' },
-  grossProfit: { value: 556000000, change: 18.3, label: 'Gross Profit' },
-  laborCost: { value: 94000000, change: 5.1, label: 'Labor Cost' },
-  overhead: { value: 85000000, change: 2.0, label: 'Overhead' },
-  netProfit: { value: 377000000, change: 22.4, label: 'Net Profit' },
-};
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
-const formatVND = (value: number) => {
-  if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)}B đ`;
-  if (value >= 1000000) return `${Math.round(value / 1000000)}M đ`;
-  return `${value.toLocaleString()} đ`;
-};
+const MONTH_SHORT = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
 
 export function PLPerformance() {
-  const grossMargin = ((plData.grossProfit.value / plData.revenue.value) * 100).toFixed(1);
-  const netMargin = ((plData.netProfit.value / plData.revenue.value) * 100).toFixed(1);
-  const laborPercent = ((plData.laborCost.value / plData.revenue.value) * 100).toFixed(1);
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState<number | 'latest'>('latest');
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  const [showMonthDropdown, setShowMonthDropdown] = useState(false);
+
+  // Fetch data
+  const { data: yearsData } = usePLYears();
+  const { data: plData, isLoading: actualLoading, error } = usePLData(selectedYear, 'actual');
+  const { data: budgetData, isLoading: budgetLoading } = usePLData(selectedYear, 'budget');
+  const { data: comparisonData } = usePLComparison(selectedYear, selectedYear - 1);
+  
+  const isLoading = actualLoading || budgetLoading;
+
+  const availableYears = yearsData && yearsData.length > 0 
+    ? yearsData 
+    : [currentYear, currentYear - 1];
+
+  // Determine displayed month - use actual if available, otherwise budget
+  const displayMonth = useMemo(() => {
+    // Try actual data first
+    if (selectedMonth === 'latest') {
+      return plData?.latestMonth || budgetData?.latestMonth || null;
+    }
+    
+    // Look for actual data for selected month
+    const actualMonth = plData?.months?.find(m => m.month === selectedMonth);
+    if (actualMonth) return actualMonth;
+    
+    // Fall back to budget data
+    const budgetMonth = budgetData?.months?.find(m => m.month === selectedMonth);
+    if (budgetMonth) return budgetMonth;
+    
+    // Default to latest available
+    return plData?.latestMonth || budgetData?.latestMonth || null;
+  }, [plData, budgetData, selectedMonth]);
+
+  // Get previous month for comparison
+  const previousMonth = useMemo(() => {
+    if (!displayMonth || !plData?.months) return null;
+    
+    const prevMonthNum = displayMonth.month === 1 ? 12 : displayMonth.month - 1;
+    return plData.months.find(m => m.month === prevMonthNum) || null;
+  }, [displayMonth, plData]);
+
+  // Get budget for current month
+  const monthBudget = useMemo(() => {
+    if (!displayMonth || !budgetData?.months) return null;
+    return budgetData.months.find(m => m.month === displayMonth.month) || null;
+  }, [displayMonth, budgetData]);
+
+  // Available months in the data (combine actual and budget)
+  const availableMonths = useMemo(() => {
+    const actualMonths = plData?.months?.map(m => m.month) || [];
+    const budgetMonths = budgetData?.months?.map(m => m.month) || [];
+    // Combine and dedupe
+    return [...new Set([...actualMonths, ...budgetMonths])].sort((a, b) => a - b);
+  }, [plData?.months, budgetData?.months]);
+
+  // Check if a month has actual data (vs only budget)
+  const monthsWithActual = useMemo(() => {
+    return plData?.months?.map(m => m.month) || [];
+  }, [plData?.months]);
+
+  // Check if we're displaying budget-only data (no actual data for this year)
+  const isBudgetOnly = !plData?.hasData && budgetData?.hasData;
+
+  // Close dropdowns on click outside
+  const closeDropdowns = () => {
+    setShowYearDropdown(false);
+    setShowMonthDropdown(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-red-400">
+        <AlertCircle className="h-8 w-8 mb-2" />
+        <p>Failed to load P&L data</p>
+        <p className="text-sm text-slate-500 mt-1">{(error as Error).message}</p>
+      </div>
+    );
+  }
+
+  const periodLabel = displayMonth 
+    ? `${MONTH_NAMES[displayMonth.month - 1]} ${selectedYear}`
+    : `${selectedYear}`;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" onClick={closeDropdowns}>
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-white">P&L Performance</h1>
-        <p className="text-sm text-slate-400 mt-1">Profit and Loss Analysis - January 2026</p>
-      </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-white">P&L Performance Overview</h1>
+            <p className="text-sm text-slate-400 mt-1">Real-time financial health and variance reporting</p>
+          </div>
+          
+          {/* Action buttons */}
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 border border-[#374151] rounded-lg hover:bg-[#374151] transition-colors">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-[#D4A574] rounded-lg hover:bg-[#C49464] transition-colors">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Download PDF</span>
+            </button>
+          </div>
+        </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-          <div className="flex items-center gap-2 text-emerald-400 mb-2">
-            <DollarSign className="h-4 w-4" />
-            <span className="text-xs">Revenue</span>
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 text-slate-400 text-sm mr-2">
+            <Filter className="h-4 w-4" />
+            <span className="hidden sm:inline">Filters:</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatVND(plData.revenue.value)}</p>
-          <p className="text-xs text-emerald-400 mt-1">+{plData.revenue.change}% vs LM</p>
-        </div>
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
-          <div className="flex items-center gap-2 text-slate-400 mb-2">
-            <Percent className="h-4 w-4" />
-            <span className="text-xs">Gross Margin</span>
-          </div>
-          <p className="text-2xl font-bold text-white">{grossMargin}%</p>
-          <p className="text-xs text-emerald-400 mt-1">Target: 65%</p>
-        </div>
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
-          <div className="flex items-center gap-2 text-slate-400 mb-2">
-            <Percent className="h-4 w-4" />
-            <span className="text-xs">Labor %</span>
-          </div>
-          <p className="text-2xl font-bold text-white">{laborPercent}%</p>
-          <p className="text-xs text-yellow-400 mt-1">Target: 30%</p>
-        </div>
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-          <div className="flex items-center gap-2 text-emerald-400 mb-2">
-            <TrendingUp className="h-4 w-4" />
-            <span className="text-xs">Net Margin</span>
-          </div>
-          <p className="text-2xl font-bold text-white">{netMargin}%</p>
-          <p className="text-xs text-emerald-400 mt-1">+{plData.netProfit.change}% vs LM</p>
-        </div>
-      </div>
-
-      {/* P&L Statement */}
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">P&L Statement</h2>
-        <div className="space-y-3">
-          {Object.entries(plData).map(([key, data]) => {
-            const isExpense = ['cogs', 'laborCost', 'overhead'].includes(key);
-            const isProfit = ['grossProfit', 'netProfit'].includes(key);
-            
-            return (
-              <div
-                key={key}
-                className={`flex items-center justify-between py-3 ${
-                  isProfit ? 'border-t border-[#374151]' : ''
-                }`}
-              >
-                <span className={`text-sm ${isProfit ? 'font-semibold text-white' : 'text-slate-300'}`}>
-                  {data.label}
-                </span>
-                <div className="flex items-center gap-4">
-                  <span className={`text-sm font-medium ${
-                    isExpense ? 'text-red-400' : isProfit ? 'text-emerald-400' : 'text-white'
-                  }`}>
-                    {isExpense ? '-' : ''}{formatVND(data.value)}
-                  </span>
-                  <div className={`flex items-center gap-1 text-xs ${
-                    data.change >= 0 ? 'text-emerald-400' : 'text-red-400'
-                  }`}>
-                    {data.change >= 0 ? (
-                      <TrendingUp className="h-3 w-3" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3" />
-                    )}
-                    <span>{Math.abs(data.change)}%</span>
-                  </div>
-                </div>
+          
+          {/* Year selector */}
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => { setShowYearDropdown(!showYearDropdown); setShowMonthDropdown(false); }}
+              className="flex items-center gap-2 rounded-lg border border-[#374151] bg-[#1a1f2e] px-3 py-2 text-sm text-white hover:bg-[#374151] transition-colors min-h-[40px]"
+            >
+              <Calendar className="h-4 w-4 text-slate-400" />
+              <span>{selectedYear}</span>
+              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            {showYearDropdown && (
+              <div className="absolute left-0 mt-2 w-28 rounded-lg border border-[#374151] bg-[#1a1f2e] shadow-xl z-20">
+                {availableYears.map(year => (
+                  <button
+                    key={year}
+                    onClick={() => { setSelectedYear(year); setSelectedMonth('latest'); setShowYearDropdown(false); }}
+                    className={`w-full px-4 py-2 text-sm text-left hover:bg-[#374151] transition-colors ${
+                      year === selectedYear ? 'text-[#D4A574]' : 'text-white'
+                    } first:rounded-t-lg last:rounded-b-lg`}
+                  >
+                    {year}
+                  </button>
+                ))}
               </div>
-            );
-          })}
+            )}
+          </div>
+
+          {/* Month selector */}
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => { setShowMonthDropdown(!showMonthDropdown); setShowYearDropdown(false); }}
+              className="flex items-center gap-2 rounded-lg border border-[#374151] bg-[#1a1f2e] px-3 py-2 text-sm text-white hover:bg-[#374151] transition-colors min-h-[40px]"
+            >
+              <span>{selectedMonth === 'latest' ? 'Latest' : MONTH_SHORT[selectedMonth - 1]}</span>
+              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            {showMonthDropdown && (
+              <div className="absolute left-0 mt-2 w-32 rounded-lg border border-[#374151] bg-[#1a1f2e] shadow-xl z-20 max-h-[300px] overflow-y-auto">
+                <button
+                  onClick={() => { setSelectedMonth('latest'); setShowMonthDropdown(false); }}
+                  className={`w-full px-4 py-2 text-sm text-left hover:bg-[#374151] transition-colors rounded-t-lg ${
+                    selectedMonth === 'latest' ? 'text-[#D4A574]' : 'text-white'
+                  }`}
+                >
+                  Latest
+                </button>
+                {MONTH_SHORT.map((name, index) => {
+                  const monthNum = index + 1;
+                  const isAvailable = availableMonths.includes(monthNum);
+                  const hasActual = monthsWithActual.includes(monthNum);
+                  return (
+                    <button
+                      key={monthNum}
+                      onClick={() => { if (isAvailable) { setSelectedMonth(monthNum); setShowMonthDropdown(false); } }}
+                      disabled={!isAvailable}
+                      className={`w-full px-4 py-2 text-sm text-left transition-colors last:rounded-b-lg flex items-center justify-between ${
+                        !isAvailable 
+                          ? 'text-slate-600 cursor-not-allowed' 
+                          : selectedMonth === monthNum 
+                            ? 'text-[#D4A574] hover:bg-[#374151]' 
+                            : 'text-white hover:bg-[#374151]'
+                      }`}
+                    >
+                      <span>{name}</span>
+                      {isAvailable && !hasActual && (
+                        <span className="text-xs text-slate-500">Budget</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Coming Soon */}
-      <div className="rounded-xl border border-dashed border-[#374151] bg-[#1a1f2e]/50 p-8 text-center">
-        <p className="text-slate-400">Detailed charts and trend analysis coming soon...</p>
-      </div>
+      {/* No data state - check for either actual OR budget data */}
+      {!plData?.hasData && !budgetData?.hasData ? (
+        <div className="rounded-xl border border-dashed border-[#374151] bg-[#1a1f2e]/50 p-8 md:p-12 text-center">
+          <Calendar className="h-10 w-10 md:h-12 md:w-12 text-slate-500 mx-auto mb-4" />
+          <p className="text-slate-400 text-base md:text-lg">No P&L data available for {selectedYear}</p>
+          <p className="text-sm text-slate-500 mt-2">
+            Sync your P&L sheet from the Admin → Data Sync page
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Budget-only indicator */}
+          {isBudgetOnly && (
+            <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-4 mb-4">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-amber-400" />
+                <p className="text-amber-400 font-medium">Showing Budget Data Only</p>
+              </div>
+              <p className="text-sm text-amber-400/70 mt-1">
+                No actual data recorded yet for {selectedYear}. Displaying budget projections.
+              </p>
+            </div>
+          )}
+
+          {/* Key Financial KPIs */}
+          <FinancialKPICards 
+            actualData={displayMonth}
+            budgetData={monthBudget}
+          />
+
+          {/* Charts row: Revenue Mix, Expense Breakdown, Profit Margin, Alerts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <RevenueMixChart data={displayMonth} />
+            <ExpenseBreakdownChart data={displayMonth} />
+            <ProfitMarginGauge data={displayMonth} previousData={previousMonth} />
+            <PLAlertsPanel 
+              currentData={displayMonth} 
+              previousData={previousMonth}
+              budgetData={monthBudget}
+            />
+          </div>
+
+          {/* Profitability Trend - use actual if available, otherwise budget */}
+          <ProfitabilityTrendChart 
+            months={plData?.months?.length ? plData.months : budgetData?.months || []} 
+            selectedMonth={selectedMonth}
+          />
+
+          {/* CFO Executive Summary */}
+          <CFOExecutiveSummary 
+            currentMonth={displayMonth}
+            previousMonth={previousMonth}
+            budgetMonth={monthBudget}
+            allMonths={plData?.months?.length ? plData.months : budgetData?.months || []}
+            year={selectedYear}
+          />
+
+          {/* Detailed P&L Financial Statement */}
+          <LineItemPerformanceTable 
+            actualData={displayMonth}
+            budgetData={monthBudget}
+          />
+        </>
+      )}
     </div>
   );
 }

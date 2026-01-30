@@ -51,8 +51,7 @@ const ownerSections: NavSection[] = [
     defaultOpen: true,
     items: [
       { to: '/', label: 'Live Snapshot', icon: Activity },
-      { to: '/alerts', label: 'Alerts & Bottlenecks', icon: AlertTriangle },
-      { to: '/weekly-focus', label: 'Weekly Focus', icon: Target },
+      { to: '/my-dashboard', label: 'My Dashboard', icon: Target },
     ],
   },
   {
@@ -105,7 +104,7 @@ const getManagerSections = (managerType: ManagerType): NavSection[] => {
       defaultOpen: true,
       items: [
         { to: '/', label: 'Overview', icon: Activity },
-        { to: '/alerts', label: 'Alerts', icon: AlertTriangle },
+        { to: '/my-dashboard', label: 'My Dashboard', icon: Target },
       ],
     },
     {
@@ -204,7 +203,12 @@ function NavItem({ item }: { item: NavItem }) {
   );
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const profile = useAuthStore((s) => s.profile);
   const role = profile?.role || 'staff';
   const managerType = profile?.managerType;
@@ -219,7 +223,20 @@ export function Sidebar() {
   const roleBadge = getRoleBadge(role, managerType);
 
   return (
-    <aside className="flex h-full w-64 flex-col bg-[#0d1117] border-r border-[#374151]">
+    <>
+      {/* Mobile overlay backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar - hidden on mobile unless open, always visible on lg+ */}
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 flex h-full w-64 flex-col bg-[#0d1117] border-r border-[#374151] transition-transform duration-300 lg:static lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[#374151]">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ff6b35]">
@@ -287,5 +304,6 @@ export function Sidebar() {
         </div>
       )}
     </aside>
+    </>
   );
 }

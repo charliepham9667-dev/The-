@@ -7,6 +7,7 @@ import { Dashboard } from './pages/owner/Dashboard';
 import { Staffing } from './pages/owner/Staffing';
 import { Alerts } from './pages/owner/Alerts';
 import { WeeklyFocus } from './pages/owner/WeeklyFocus';
+import { MyDashboard } from './pages/owner/MyDashboard';
 import { WorkforceOverview } from './pages/owner/WorkforceOverview';
 import { ManagerPerformance } from './pages/owner/ManagerPerformance';
 // Finance pages
@@ -71,6 +72,11 @@ export default function App() {
         <Route index element={<DashboardRedirect />} />
         
         {/* Owner-only routes */}
+        <Route path="my-dashboard" element={
+          <RoleGuard allowedRoles={['owner']}>
+            <MyDashboard />
+          </RoleGuard>
+        } />
         <Route path="weekly-focus" element={
           <RoleGuard allowedRoles={['owner']}>
             <WeeklyFocus />

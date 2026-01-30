@@ -107,15 +107,15 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-[#374151] bg-[#1a1f2e] shadow-xl">
+      <div className="w-full max-w-md rounded-xl border border-[#374151] bg-[#1a1f2e] shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#374151] p-4">
-          <h2 className="text-lg font-semibold text-white">
+        <div className="flex items-center justify-between border-b border-[#374151] p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold text-white">
             {isEditing ? 'Edit Shift' : 'Add New Shift'}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors"
+            className="rounded-lg p-2 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1"
           >
             <X className="h-5 w-5" />
           </button>
@@ -127,9 +127,9 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
             <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          <form onSubmit={handleSubmit} className="p-3 md:p-4 space-y-3 md:space-y-4">
             {error && (
-              <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
+              <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-xs md:text-sm text-red-400">
                 {error}
               </div>
             )}
@@ -142,7 +142,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
               <select
                 value={formData.staffId}
                 onChange={(e) => setFormData({ ...formData, staffId: e.target.value })}
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none"
+                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
               >
                 <option value="">Select staff...</option>
                 {(staffList || []).map((staff) => (
@@ -162,7 +162,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                 type="date"
                 value={formData.shiftDate}
                 onChange={(e) => setFormData({ ...formData, shiftDate: e.target.value })}
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none"
+                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
               />
             </div>
 
@@ -176,7 +176,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                  className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none"
+                  className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
                 />
               </div>
               <div>
@@ -187,7 +187,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                  className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none"
+                  className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
                 />
               </div>
             </div>
@@ -200,7 +200,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none"
+                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
               >
                 {ROLES.map((role) => (
                   <option key={role} value={role}>
@@ -220,7 +220,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={2}
                 placeholder="Any special instructions..."
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-[#ff6b35] focus:outline-none resize-none"
+                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white placeholder-slate-500 focus:border-[#ff6b35] focus:outline-none resize-none"
               />
             </div>
 
@@ -228,13 +228,13 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
             {isEditing && existingShift && (
               <div className="rounded-lg border border-[#374151] bg-[#0f1419] p-3">
                 <p className="text-xs text-slate-400 mb-2">Time Tracking</p>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {!existingShift.clockIn ? (
                     <button
                       type="button"
                       onClick={handleClockIn}
                       disabled={clockInOut.isPending}
-                      className="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 md:py-1.5 text-xs font-medium text-white hover:bg-emerald-700 transition-colors disabled:opacity-50 min-h-[40px] md:min-h-0"
                     >
                       <Play className="h-3 w-3" />
                       Clock In
@@ -249,7 +249,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                         type="button"
                         onClick={handleClockOut}
                         disabled={clockInOut.isPending}
-                        className="flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1 rounded-lg bg-red-600 px-3 py-2 md:py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50 min-h-[40px] md:min-h-0"
                       >
                         <Square className="h-3 w-3" />
                         Clock Out
@@ -265,30 +265,30 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
               {isEditing && (
                 <button
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteShift.isPending}
-                  className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                  className="flex items-center justify-center gap-1 rounded-lg px-3 py-2.5 md:py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50 min-h-[44px] md:min-h-0"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete
                 </button>
               )}
-              <div className={`flex gap-2 ${isEditing ? '' : 'ml-auto'}`}>
+              <div className={`flex flex-col sm:flex-row gap-2 ${isEditing ? '' : 'sm:ml-auto'} w-full sm:w-auto`}>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg border border-[#374151] px-4 py-2 text-sm text-slate-400 hover:bg-[#374151] hover:text-white transition-colors"
+                  className="rounded-lg border border-[#374151] px-4 py-2.5 md:py-2 text-sm text-slate-400 hover:bg-[#374151] hover:text-white transition-colors min-h-[44px] md:min-h-0 w-full sm:w-auto"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2.5 md:py-2 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors disabled:opacity-50 min-h-[44px] md:min-h-0 w-full sm:w-auto"
                 >
                   {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isEditing ? 'Save Changes' : 'Create Shift'}

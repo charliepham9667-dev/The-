@@ -59,7 +59,7 @@ export function ComplianceAlerts() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6 h-64 flex items-center justify-center">
+      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
@@ -67,16 +67,16 @@ export function ComplianceAlerts() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6 h-64 flex items-center justify-center">
+      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex items-center justify-center">
         <p className="text-slate-400">Failed to load compliance data</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6 h-64 flex flex-col">
+    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex flex-col">
       {/* Header */}
-      <h3 className="text-lg font-semibold text-white mb-4">Compliance Alerts</h3>
+      <h3 className="text-base md:text-lg font-semibold text-white mb-3 md:mb-4">Compliance Alerts</h3>
 
       {/* Alerts List */}
       <div className="flex-1 space-y-3 overflow-y-auto">

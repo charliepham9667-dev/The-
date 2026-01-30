@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 
 // =============================================
@@ -57,6 +57,253 @@ export interface Target {
   period: 'daily' | 'weekly' | 'monthly';
   periodStart: string;
   periodEnd: string | null;
+}
+
+// =============================================
+// Revenue Velocity
+// =============================================
+
+export interface RevenueVelocityData {
+  monthlyTarget: number;
+  mtdRevenue: number;
+  goalAchievedPercent: number;
+  currentDay: number;
+  daysInMonth: number;
+  surplus: number; // positive = surplus, negative = deficit
+  projectedMonthEnd: number;
+  dailyTargetPace: number; // required daily to hit base target
+  // Stretch goal (1.5x target, only shown if > 100% achieved)
+  showStretchGoal: boolean;
+  stretchGoal: number;
+  gapToStretch: number;
+  requiredPaceForStretch: number;
+  // For insight text
+  yesterdayRevenue: number;
+  avgDailyRevenue: number;
+}
+
+export function useRevenueVelocity() {
+  return useQuery({
+    queryKey: ['revenue-velocity'],
+    queryFn: async (): Promise<RevenueVelocityData> => {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const currentDay = now.getDate();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      // Get monthly target
+      const periodStart = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`;
+      const { data: targetData } = await supabase
+        .from('targets')
+        .select('target_value')
+        .eq('metric', 'revenue')
+        .eq('period', 'monthly')
+        .eq('period_start', periodStart)
+        .single();
+
+      const monthlyTarget = targetData?.target_value || 750000000; // Default 750M
+
+      // Get MTD revenue
+      const { data: metricsData } = await supabase
+        .from('daily_metrics')
+        .select('date, revenue')
+        .gte('date', periodStart)
+        .lte('date', `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`)
+        .order('date', { ascending: false });
+
+      const mtdRevenue = (metricsData || []).reduce((sum, row) => sum + (row.revenue || 0), 0);
+      const daysWithData = (metricsData || []).filter(r => r.revenue > 0).length;
+      
+      // Yesterday's revenue (most recent day)
+      const yesterdayRevenue = metricsData && metricsData.length > 0 ? metricsData[0].revenue : 0;
+      
+      // Average daily revenue
+      const avgDailyRevenue = daysWithData > 0 ? mtdRevenue / daysWithData : 0;
+
+      // Calculations
+      const goalAchievedPercent = monthlyTarget > 0 ? (mtdRevenue / monthlyTarget) * 100 : 0;
+      const surplus = mtdRevenue - monthlyTarget; // Simple: actual - target
+      const projectedMonthEnd = daysWithData > 0 ? (mtdRevenue / daysWithData) * daysInMonth : 0;
+      const dailyTargetPace = monthlyTarget / daysInMonth;
+
+      // Stretch goal (1.5x, only if > 100% achieved)
+      const showStretchGoal = goalAchievedPercent >= 100;
+      const stretchGoal = monthlyTarget * 1.5;
+      const gapToStretch = stretchGoal - mtdRevenue;
+      const remainingDays = daysInMonth - currentDay;
+      const requiredPaceForStretch = remainingDays > 0 ? gapToStretch / remainingDays : 0;
+
+      return {
+        monthlyTarget,
+        mtdRevenue,
+        goalAchievedPercent,
+        currentDay,
+        daysInMonth,
+        surplus,
+        projectedMonthEnd,
+        dailyTargetPace,
+        showStretchGoal,
+        stretchGoal,
+        gapToStretch,
+        requiredPaceForStretch,
+        yesterdayRevenue,
+        avgDailyRevenue,
+      };
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+// =============================================
+// Sync Status
+// =============================================
+
+export interface SyncStatus {
+  lastSyncAt: string | null;
+  status: 'completed' | 'failed' | 'running' | 'pending' | null;
+  hoursAgo: number;
+  isStale: boolean; // true if > 24 hours since last sync
+}
+
+export function useSyncStatus() {
+  return useQuery({
+    queryKey: ['sync-status'],
+    queryFn: async (): Promise<SyncStatus> => {
+      const { data, error } = await supabase
+        .from('sync_logs')
+        .select('completed_at, status')
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error || !data?.completed_at) {
+        return {
+          lastSyncAt: null,
+          status: null,
+          hoursAgo: -1,
+          isStale: true,
+        };
+      }
+
+      const completedAt = new Date(data.completed_at);
+      const now = new Date();
+      const hoursAgo = Math.round((now.getTime() - completedAt.getTime()) / (1000 * 60 * 60));
+
+      return {
+        lastSyncAt: data.completed_at,
+        status: data.status,
+        hoursAgo,
+        isStale: hoursAgo > 24,
+      };
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
+// =============================================
+// Target Management
+// =============================================
+
+export function useTargets() {
+  return useQuery({
+    queryKey: ['targets'],
+    queryFn: async (): Promise<Target[]> => {
+      const { data, error } = await supabase
+        .from('targets')
+        .select('*')
+        .eq('metric', 'revenue')
+        .eq('period', 'monthly')
+        .order('period_start', { ascending: false });
+
+      if (error) throw error;
+
+      return (data || []).map(row => ({
+        id: row.id,
+        metric: row.metric,
+        targetValue: row.target_value,
+        period: row.period,
+        periodStart: row.period_start,
+        periodEnd: row.period_end,
+      }));
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useCreateTarget() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: { month: number; year: number; targetValue: number }) => {
+      const periodStart = `${data.year}-${String(data.month + 1).padStart(2, '0')}-01`;
+      const lastDay = new Date(data.year, data.month + 1, 0).getDate();
+      const periodEnd = `${data.year}-${String(data.month + 1).padStart(2, '0')}-${lastDay}`;
+
+      const { data: result, error } = await supabase
+        .from('targets')
+        .insert({
+          metric: 'revenue',
+          target_value: data.targetValue,
+          period: 'monthly',
+          period_start: periodStart,
+          period_end: periodEnd,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['targets'] });
+      queryClient.invalidateQueries({ queryKey: ['kpi-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['monthly-performance'] });
+    },
+  });
+}
+
+export function useUpdateTarget() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: { id: string; targetValue: number }) => {
+      const { data: result, error } = await supabase
+        .from('targets')
+        .update({ target_value: data.targetValue })
+        .eq('id', data.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['targets'] });
+      queryClient.invalidateQueries({ queryKey: ['kpi-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['monthly-performance'] });
+    },
+  });
+}
+
+export function useDeleteTarget() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('targets')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['targets'] });
+      queryClient.invalidateQueries({ queryKey: ['kpi-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['monthly-performance'] });
+    },
+  });
 }
 
 // =============================================
@@ -406,6 +653,87 @@ export function useCompliance() {
       }));
     },
     staleTime: 1000 * 60 * 10,
+  });
+}
+
+// =============================================
+// Monthly Performance
+// =============================================
+
+export interface MonthlyPerformanceData {
+  month: string;
+  monthIndex: number;
+  actualRevenue: number;
+  targetRevenue: number;
+  achievementPercent: number;
+}
+
+export function useMonthlyPerformance() {
+  return useQuery({
+    queryKey: ['monthly-performance'],
+    queryFn: async (): Promise<MonthlyPerformanceData[]> => {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
+      // Get all daily metrics for current year
+      const { data: metricsData, error } = await supabase
+        .from('daily_metrics')
+        .select('date, revenue')
+        .gte('date', `${currentYear}-01-01`)
+        .lte('date', `${currentYear}-12-31`)
+        .order('date', { ascending: true });
+
+      if (error) throw error;
+
+      // Get all monthly revenue targets
+      const { data: targetsData } = await supabase
+        .from('targets')
+        .select('*')
+        .eq('metric', 'revenue')
+        .eq('period', 'monthly');
+
+      // Group metrics by month
+      const monthlyRevenue: Record<number, number> = {};
+      (metricsData || []).forEach(row => {
+        const month = parseInt(row.date.split('-')[1], 10) - 1; // 0-indexed
+        monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (row.revenue || 0);
+      });
+
+      // Create target map by month (parse period_start to get month)
+      const targetMap: Record<number, number> = {};
+      (targetsData || []).forEach(target => {
+        if (target.period_start) {
+          const month = parseInt(target.period_start.split('-')[1], 10) - 1;
+          targetMap[month] = target.target_value;
+        }
+      });
+
+      // Default target if none set
+      const defaultTarget = 750000000; // 750M VND
+
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      // Build result for months that have data
+      const result: MonthlyPerformanceData[] = [];
+      for (let i = 0; i <= now.getMonth(); i++) {
+        const actual = monthlyRevenue[i] || 0;
+        const target = targetMap[i] || defaultTarget;
+        
+        // Only include months with data
+        if (actual > 0) {
+          result.push({
+            month: monthNames[i],
+            monthIndex: i,
+            actualRevenue: actual,
+            targetRevenue: target,
+            achievementPercent: target > 0 ? Math.round((actual / target) * 100) : 0,
+          });
+        }
+      }
+
+      return result;
+    },
+    staleTime: 1000 * 60 * 5,
   });
 }
 
