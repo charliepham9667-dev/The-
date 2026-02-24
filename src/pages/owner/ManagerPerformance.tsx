@@ -47,80 +47,80 @@ export function ManagerPerformance() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">Manager Performance</h1>
-        <p className="text-sm text-slate-400 mt-1">Track and evaluate manager metrics</p>
+        <h1 className="text-2xl font-semibold text-foreground">Manager Performance</h1>
+        <p className="text-sm text-muted-foreground mt-1">Track and evaluate manager metrics</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
-          <div className="flex items-center gap-2 text-slate-400 mb-2">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
             <UserCheck className="h-4 w-4" />
             <span className="text-xs">Active Managers</span>
           </div>
-          <p className="text-2xl font-bold text-white">{managers.length}</p>
+          <p className="text-2xl font-bold text-foreground">{managers.length}</p>
         </div>
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
-          <div className="flex items-center gap-2 text-slate-400 mb-2">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
             <TrendingUp className="h-4 w-4" />
             <span className="text-xs">Avg Efficiency</span>
           </div>
-          <p className="text-2xl font-bold text-emerald-400">91%</p>
+          <p className="text-2xl font-bold text-success">91%</p>
         </div>
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
-          <div className="flex items-center gap-2 text-slate-400 mb-2">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
             <Star className="h-4 w-4" />
             <span className="text-xs">Avg Rating</span>
           </div>
-          <p className="text-2xl font-bold text-yellow-400">4.7</p>
+          <p className="text-2xl font-bold text-warning">4.7</p>
         </div>
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
-          <div className="flex items-center gap-2 text-slate-400 mb-2">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
             <Target className="h-4 w-4" />
             <span className="text-xs">Targets Met</span>
           </div>
-          <p className="text-2xl font-bold text-white">93%</p>
+          <p className="text-2xl font-bold text-foreground">93%</p>
         </div>
       </div>
 
       {/* Manager Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {managers.map((manager) => (
-          <div key={manager.id} className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
+          <div key={manager.id} className="rounded-xl border border-border bg-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 rounded-full bg-[#ff6b35] flex items-center justify-center text-white font-semibold">
+              <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
                 {manager.name.split(' ').map(n => n[0]).join('')}
               </div>
               <div>
-                <p className="text-sm font-medium text-white">{manager.name}</p>
-                <p className="text-xs text-slate-400">{manager.role}</p>
+                <p className="text-sm font-medium text-foreground">{manager.name}</p>
+                <p className="text-xs text-muted-foreground">{manager.role}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="rounded-lg bg-[#0f1419] p-3">
-                <p className="text-xs text-slate-400 mb-1">Efficiency</p>
-                <p className="text-lg font-semibold text-emerald-400">{manager.metrics.teamEfficiency}%</p>
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-xs text-muted-foreground mb-1">Efficiency</p>
+                <p className="text-lg font-semibold text-success">{manager.metrics.teamEfficiency}%</p>
               </div>
-              <div className="rounded-lg bg-[#0f1419] p-3">
-                <p className="text-xs text-slate-400 mb-1">Rating</p>
-                <p className="text-lg font-semibold text-yellow-400">{manager.metrics.customerRating}</p>
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-xs text-muted-foreground mb-1">Rating</p>
+                <p className="text-lg font-semibold text-warning">{manager.metrics.customerRating}</p>
               </div>
-              <div className="rounded-lg bg-[#0f1419] p-3">
-                <p className="text-xs text-slate-400 mb-1">Targets</p>
-                <p className="text-lg font-semibold text-white">{manager.metrics.targetsMet}%</p>
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-xs text-muted-foreground mb-1">Targets</p>
+                <p className="text-lg font-semibold text-foreground">{manager.metrics.targetsMet}%</p>
               </div>
-              <div className="rounded-lg bg-[#0f1419] p-3">
-                <p className="text-xs text-slate-400 mb-1">Attendance</p>
-                <p className="text-lg font-semibold text-white">{manager.metrics.attendance}%</p>
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-xs text-muted-foreground mb-1">Attendance</p>
+                <p className="text-lg font-semibold text-foreground">{manager.metrics.attendance}%</p>
               </div>
             </div>
 
-            <div className="border-t border-[#374151] pt-3">
-              <p className="text-xs text-slate-400 mb-2">Highlights</p>
+            <div className="border-t border-border pt-3">
+              <p className="text-xs text-muted-foreground mb-2">Highlights</p>
               {manager.highlights.map((highlight, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-slate-300">
-                  <Award className="h-3 w-3 text-[#ff6b35]" />
+                <div key={i} className="flex items-center gap-2 text-xs text-foreground">
+                  <Award className="h-3 w-3 text-primary" />
                   {highlight}
                 </div>
               ))}

@@ -10,6 +10,12 @@ import { WeeklyFocus } from './pages/owner/WeeklyFocus';
 import { MyDashboard } from './pages/owner/MyDashboard';
 import { WorkforceOverview } from './pages/owner/WorkforceOverview';
 import { ManagerPerformance } from './pages/owner/ManagerPerformance';
+import { TaskDelegation } from './pages/owner/TaskDelegation';
+import { InvestorDashboard } from './pages/investor/InvestorDashboard';
+import { TeamDirectory } from './pages/owner/TeamDirectory';
+import { EmployeeProfile } from './pages/owner/EmployeeProfile';
+import { Calendar } from './pages/owner/Calendar';
+import { Resources } from './pages/owner/Resources';
 // Finance pages
 import { PLPerformance } from './pages/finance/PLPerformance';
 import { ReportBuilder } from './pages/finance/ReportBuilder';
@@ -21,10 +27,17 @@ import { Forecast } from './pages/finance/Forecast';
 import { StaffDashboard } from './pages/staff/StaffDashboard';
 import { MyShifts } from './pages/staff/MyShifts';
 import { Profile } from './pages/staff/Profile';
+import { Tasks } from './pages/staff/Tasks';
+import { Leave } from './pages/staff/Leave';
+// Manager pages
+import { ManagerDashboard, Reservations, LeaveApproval, Announcements } from './pages/manager';
 // Admin pages
 import { SyncData } from './pages/admin/SyncData';
-// Shared pages
+// Common pages
 import { Chat } from './pages/Chat';
+import { AnnouncementsFeed, AnnouncementDetail } from './pages/common/AnnouncementsFeed';
+import { MyDelegatedTasks } from './pages/common/MyDelegatedTasks';
+import DesignSystemPage from './pages/DesignSystem';
 import { useAuthStore } from './stores/authStore';
 import { RoleGuard } from './components/auth/RoleGuard';
 
@@ -40,8 +53,8 @@ function ProtectedRoute() {
   // Show loading while checking auth
   if (!initialized) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0f1419]">
-        <div className="text-slate-400">Loading...</div>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
@@ -53,12 +66,21 @@ function ProtectedRoute() {
   return <DashboardLayout />;
 }
 
-// Smart dashboard redirect based on role
+// Smart dashboard redirect based on role (respects viewAs)
 function DashboardRedirect() {
   const profile = useAuthStore((s) => s.profile);
+  const viewAs = useAuthStore((s) => s.viewAs);
   
-  if (profile?.role === 'staff') {
+  const effectiveRole = viewAs?.role || profile?.role;
+  
+  if (effectiveRole === 'staff') {
     return <StaffDashboard />;
+  }
+  if (effectiveRole === 'manager') {
+    return <ManagerDashboard />;
+  }
+  if (effectiveRole === 'investor') {
+    return <InvestorDashboard />;
   }
   return <Dashboard />;
 }
@@ -145,13 +167,84 @@ export default function App() {
         } />
         
         {/* Staff routes (accessible by all) */}
+        <Route path="staff/dashboard" element={<StaffDashboard />} />
         <Route path="my-shifts" element={<MyShifts />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="tasks" element={<Tasks />} />
+        <Route path="my-tasks" element={<MyDelegatedTasks />} />
+        <Route path="leave" element={<Leave />} />
         
-        {/* Chat - accessible by all */}
+        {/* Manager routes */}
+        <Route path="manager/dashboard" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <ManagerDashboard />
+          </RoleGuard>
+        } />
+        <Route path="manager/reservations" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <Reservations />
+          </RoleGuard>
+        } />
+        <Route path="manager/reservations/new" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <Reservations />
+          </RoleGuard>
+        } />
+        <Route path="manager/leave" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <LeaveApproval />
+          </RoleGuard>
+        } />
+        <Route path="manager/announcements" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <Announcements />
+          </RoleGuard>
+        } />
+        <Route path="manager/announcements/new" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <Announcements />
+          </RoleGuard>
+        } />
+        
+        {/* Owner-only routes */}
+        <Route path="owner/tasks" element={
+          <RoleGuard allowedRoles={['owner']}>
+            <TaskDelegation />
+          </RoleGuard>
+        } />
+        <Route path="owner/team" element={
+          <RoleGuard allowedRoles={['owner']}>
+            <TeamDirectory />
+          </RoleGuard>
+        } />
+        <Route path="owner/team/:id" element={
+          <RoleGuard allowedRoles={['owner', 'manager']}>
+            <EmployeeProfile />
+          </RoleGuard>
+        } />
+        <Route path="owner/calendar" element={
+          <RoleGuard allowedRoles={['owner']}>
+            <Calendar />
+          </RoleGuard>
+        } />
+        <Route path="resources" element={<Resources />} />
+        <Route path="owner/resources" element={
+          <RoleGuard allowedRoles={['owner']}>
+            <Resources />
+          </RoleGuard>
+        } />
+        <Route path="investor/dashboard" element={
+          <RoleGuard allowedRoles={['owner', 'investor']}>
+            <InvestorDashboard />
+          </RoleGuard>
+        } />
+        
+        {/* Common routes - accessible by all */}
+        <Route path="announcements" element={<AnnouncementsFeed />} />
+        <Route path="announcements/:id" element={<AnnouncementDetail />} />
         <Route path="chat" element={<Chat />} />
+        <Route path="design-system" element={<DesignSystemPage />} />
       </Route>
     </Routes>
   );
 }
-

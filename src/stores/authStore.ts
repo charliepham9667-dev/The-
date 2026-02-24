@@ -1,24 +1,35 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
-import type { Profile } from '../types';
+import type { Profile, UserRole, ManagerType } from '../types';
 import type { User } from '@supabase/supabase-js';
+
+interface ViewAsState {
+  role: UserRole;
+  managerType?: ManagerType | null;
+}
 
 interface AuthState {
   user: User | null;
   profile: Profile | null;
   isLoading: boolean;
   initialized: boolean;
+  // View As (for role preview)
+  viewAs: ViewAsState | null;
+  setViewAs: (viewAs: ViewAsState | null) => void;
   // Actions
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string, role: string) => Promise<void>;
   signOut: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   initialize: () => Promise<void>;
-  // Role helpers
+  // Role helpers (respect viewAs)
   isOwner: () => boolean;
   isManager: () => boolean;
   isStaff: () => boolean;
-  hasRole: (roles: Array<'owner' | 'manager' | 'staff'>) => boolean;
+  hasRole: (roles: Array<'owner' | 'manager' | 'staff' | 'investor'>) => boolean;
+  isInvestor: () => boolean;
+  // Get effective profile (considering viewAs)
+  getEffectiveProfile: () => Profile | null;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -26,14 +37,49 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   profile: null,
   isLoading: false,
   initialized: false,
+  viewAs: null,
 
-  // Role helpers
-  isOwner: () => get().profile?.role === 'owner',
-  isManager: () => get().profile?.role === 'manager',
-  isStaff: () => get().profile?.role === 'staff',
+  setViewAs: (viewAs) => set({ viewAs }),
+
+  // Get effective profile (with viewAs override)
+  getEffectiveProfile: () => {
+    const { profile, viewAs } = get();
+    if (!profile) return null;
+    if (!viewAs) return profile;
+    
+    // Return profile with overridden role/managerType for UI purposes
+    return {
+      ...profile,
+      role: viewAs.role,
+      managerType: viewAs.managerType || null,
+    };
+  },
+
+  // Role helpers (respect viewAs for UI preview)
+  isOwner: () => {
+    const { profile, viewAs } = get();
+    const effectiveRole = viewAs?.role || profile?.role;
+    return effectiveRole === 'owner';
+  },
+  isManager: () => {
+    const { profile, viewAs } = get();
+    const effectiveRole = viewAs?.role || profile?.role;
+    return effectiveRole === 'manager';
+  },
+  isStaff: () => {
+    const { profile, viewAs } = get();
+    const effectiveRole = viewAs?.role || profile?.role;
+    return effectiveRole === 'staff';
+  },
+  isInvestor: () => {
+    const { profile, viewAs } = get();
+    const effectiveRole = viewAs?.role || profile?.role;
+    return effectiveRole === 'investor';
+  },
   hasRole: (roles) => {
-    const userRole = get().profile?.role;
-    return userRole ? roles.includes(userRole) : false;
+    const { profile, viewAs } = get();
+    const effectiveRole = viewAs?.role || profile?.role;
+    return effectiveRole ? roles.includes(effectiveRole) : false;
   },
 
   initialize: async () => {
@@ -82,7 +128,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           id: data.id,
           email: data.email,
           fullName: data.full_name,
-          role: data.role as 'owner' | 'manager' | 'staff',
+          role: data.role as 'owner' | 'manager' | 'staff' | 'investor',
           managerType: data.manager_type,
           avatarUrl: data.avatar_url,
           phone: data.phone,

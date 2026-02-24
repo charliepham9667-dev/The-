@@ -18,7 +18,7 @@ export function DashboardLayout() {
   }, [initialize, initialized]);
 
   return (
-    <div className="flex h-screen bg-[#0f1419] text-slate-100">
+    <div className="flex h-screen bg-background text-foreground">
       {/* Sidebar - hidden on mobile, visible on lg+ */}
       <Sidebar 
         isOpen={sidebarOpen} 
@@ -28,7 +28,7 @@ export function DashboardLayout() {
       <div className="flex flex-1 flex-col min-w-0">
         <Header onMenuClick={() => setSidebarOpen(true)} />
         {/* Responsive padding: smaller on mobile */}
-        <main className="flex-1 overflow-y-auto bg-[#1a1f2e] px-4 py-4 md:px-6 md:py-6">
+        <main className="flex-1 overflow-y-auto bg-card px-4 py-4 md:px-6 md:py-6">
           <Outlet />
         </main>
       </div>

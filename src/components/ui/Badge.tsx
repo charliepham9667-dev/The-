@@ -1,32 +1,50 @@
-import * as React from 'react';
-import { cn } from '../../lib/utils';
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
-type BadgeVariant = 'success' | 'warning' | 'error' | 'info';
+import { cn } from "@/lib/utils"
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: BadgeVariant;
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        destructive:
+          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        outline: "text-foreground",
+        // Semantic variants for HRM
+        success:
+          "border-transparent bg-success/15 text-success",
+        warning:
+          "border-transparent bg-warning/15 text-warning",
+        error:
+          "border-transparent bg-error/15 text-error",
+        info:
+          "border-transparent bg-info/15 text-info",
+        // Brand variants
+        brand:
+          "border-transparent bg-brand-terracotta text-white",
+        subtle:
+          "border-brand-rose bg-brand-sand text-brand-espresso",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
+
+function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  )
 }
 
-const variantClasses: Record<BadgeVariant, string> = {
-  success: 'bg-accent-green/10 text-accent-green border border-accent-green/40',
-  warning: 'bg-accent-yellow/10 text-accent-yellow border border-accent-yellow/40',
-  error: 'bg-accent-red/10 text-accent-red border border-accent-red/40',
-  info: 'bg-accent-blue/10 text-accent-blue border border-accent-blue/40'
-};
-
-export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = 'info', ...props }, ref) => (
-    <span
-      ref={ref}
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-        variantClasses[variant],
-        className
-      )}
-      {...props}
-    />
-  )
-);
-
-Badge.displayName = 'Badge';
-
+export { Badge, badgeVariants }

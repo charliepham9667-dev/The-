@@ -168,40 +168,40 @@ const initialTasks: Record<KanbanStatus, KanbanTask[]> = {
 // ============================================================================
 
 const typeConfig = {
-  critical: { icon: AlertCircle, bg: 'bg-red-500/10', border: 'border-red-500/30', iconColor: 'text-red-500', badge: 'bg-red-500' },
-  warning: { icon: AlertTriangle, bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', iconColor: 'text-yellow-500', badge: 'bg-yellow-500' },
-  info: { icon: Clock, bg: 'bg-blue-500/10', border: 'border-blue-500/30', iconColor: 'text-blue-500', badge: 'bg-blue-500' },
+  critical: { icon: AlertCircle, bg: 'bg-error/10', border: 'border-error/30', iconColor: 'text-error', badge: 'bg-error' },
+  warning: { icon: AlertTriangle, bg: 'bg-warning/10', border: 'border-warning/30', iconColor: 'text-warning', badge: 'bg-warning' },
+  info: { icon: Clock, bg: 'bg-info/10', border: 'border-info/30', iconColor: 'text-info', badge: 'bg-info' },
 };
 
-const impactColors = { high: 'text-red-400', medium: 'text-yellow-400', low: 'text-emerald-400' };
+const impactColors = { high: 'text-error', medium: 'text-warning', low: 'text-success' };
 
 const goalCategoryConfig = {
-  revenue: { icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  service: { icon: Target, color: 'text-blue-400', bg: 'bg-blue-500/20' },
+  revenue: { icon: DollarSign, color: 'text-success', bg: 'bg-success/20' },
+  service: { icon: Target, color: 'text-info', bg: 'bg-info/20' },
   team: { icon: Users, color: 'text-purple-400', bg: 'bg-purple-500/20' },
-  operations: { icon: TrendingUp, color: 'text-orange-400', bg: 'bg-orange-500/20' },
+  operations: { icon: TrendingUp, color: 'text-primary', bg: 'bg-primary/20' },
 };
 
 const kanbanColumns: { key: KanbanStatus; label: string; color: string }[] = [
-  { key: 'not_started', label: 'Not Started', color: 'border-slate-500' },
-  { key: 'in_progress', label: 'In Progress', color: 'border-blue-500' },
-  { key: 'pending', label: 'Pending', color: 'border-yellow-500' },
+  { key: 'not_started', label: 'Not Started', color: 'border-muted-foreground' },
+  { key: 'in_progress', label: 'In Progress', color: 'border-info' },
+  { key: 'pending', label: 'Pending', color: 'border-warning' },
   { key: 'follow_up', label: 'Follow Up', color: 'border-purple-500' },
-  { key: 'done', label: 'Done', color: 'border-emerald-500' },
+  { key: 'done', label: 'Done', color: 'border-success' },
 ];
 
 const taskCategoryColors: Record<string, string> = {
   staffing: 'bg-purple-500/20 text-purple-400',
-  finance: 'bg-emerald-500/20 text-emerald-400',
-  operations: 'bg-orange-500/20 text-orange-400',
+  finance: 'bg-success/20 text-success',
+  operations: 'bg-primary/20 text-primary',
   marketing: 'bg-pink-500/20 text-pink-400',
-  compliance: 'bg-blue-500/20 text-blue-400',
+  compliance: 'bg-info/20 text-info',
 };
 
 const priorityColors: Record<string, string> = {
-  high: 'bg-red-500/20 text-red-400',
-  medium: 'bg-yellow-500/20 text-yellow-400',
-  low: 'bg-slate-500/20 text-slate-400',
+  high: 'bg-error/20 text-error',
+  medium: 'bg-warning/20 text-warning',
+  low: 'bg-muted text-muted-foreground',
 };
 
 // ============================================================================
@@ -247,11 +247,11 @@ export function MyDashboard() {
     const today = new Date();
     const diffDays = Math.ceil((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (diffDays < 0) return { text: 'Overdue', color: 'text-red-400' };
-    if (diffDays === 0) return { text: 'Today', color: 'text-yellow-400' };
-    if (diffDays === 1) return { text: 'Tomorrow', color: 'text-yellow-400' };
-    if (diffDays <= 7) return { text: `${diffDays} days`, color: 'text-slate-400' };
-    return { text: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), color: 'text-slate-500' };
+    if (diffDays < 0) return { text: 'Overdue', color: 'text-error' };
+    if (diffDays === 0) return { text: 'Today', color: 'text-warning' };
+    if (diffDays === 1) return { text: 'Tomorrow', color: 'text-warning' };
+    if (diffDays <= 7) return { text: `${diffDays} days`, color: 'text-muted-foreground' };
+    return { text: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), color: 'text-muted-foreground' };
   };
 
   return (
@@ -259,10 +259,10 @@ export function MyDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">My Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-1">Your tasks, alerts, and weekly focus</p>
+          <h1 className="text-2xl font-semibold text-foreground">My Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">Your tasks, alerts, and weekly focus</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors">
+        <button className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
           <Plus className="h-4 w-4" />
           Add Task
         </button>
@@ -270,48 +270,48 @@ export function MyDashboard() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+        <div className="rounded-xl border border-error/30 bg-error/10 p-4">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            <span className="text-sm text-slate-400">Critical</span>
+            <AlertCircle className="h-5 w-5 text-error" />
+            <span className="text-sm text-muted-foreground">Critical</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{criticalCount}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{criticalCount}</p>
         </div>
-        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-yellow-500" />
-            <span className="text-sm text-slate-400">Warnings</span>
+            <AlertTriangle className="h-5 w-5 text-warning" />
+            <span className="text-sm text-muted-foreground">Warnings</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{warningCount}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{warningCount}</p>
         </div>
-        <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
+        <div className="rounded-xl border border-info/30 bg-info/10 p-4">
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-500" />
-            <span className="text-sm text-slate-400">In Progress</span>
+            <Clock className="h-5 w-5 text-info" />
+            <span className="text-sm text-muted-foreground">In Progress</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{tasks.in_progress.length}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{tasks.in_progress.length}</p>
         </div>
         <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-4">
           <div className="flex items-center gap-2">
             <TrendingDown className="h-5 w-5 text-purple-500" />
-            <span className="text-sm text-slate-400">Bottlenecks</span>
+            <span className="text-sm text-muted-foreground">Bottlenecks</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{bottlenecks.length}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{bottlenecks.length}</p>
         </div>
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+        <div className="rounded-xl border border-success/30 bg-success/10 p-4">
           <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-emerald-500" />
-            <span className="text-sm text-slate-400">Weekly Progress</span>
+            <Target className="h-5 w-5 text-success" />
+            <span className="text-sm text-muted-foreground">Weekly Progress</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{overallProgress}%</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{overallProgress}%</p>
         </div>
       </div>
 
       {/* Main Grid: Alerts + Goals + Bottlenecks */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Active Alerts */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-5">
-          <h2 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Active Alerts</h2>
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Active Alerts</h2>
           <div className="space-y-3">
             {alerts.map((alert) => {
               const config = typeConfig[alert.type];
@@ -321,12 +321,12 @@ export function MyDashboard() {
                   <div className="flex items-start gap-3">
                     <Icon className={`h-4 w-4 mt-0.5 ${config.iconColor}`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{alert.title}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{alert.description}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{alert.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{alert.description}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-[10px] text-slate-500">{alert.timestamp}</span>
+                        <span className="text-[10px] text-muted-foreground">{alert.timestamp}</span>
                         {alert.actionLabel && (
-                          <button className="text-[10px] font-medium text-[#ff6b35] hover:underline">
+                          <button className="text-[10px] font-medium text-primary hover:underline">
                             {alert.actionLabel}
                           </button>
                         )}
@@ -340,36 +340,36 @@ export function MyDashboard() {
         </div>
 
         {/* Weekly Goals */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Weekly Goals</h2>
-            <span className="text-xs text-slate-400">{completedGoals}/{weeklyGoals.length}</span>
+            <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Weekly Goals</h2>
+            <span className="text-xs text-muted-foreground">{completedGoals}/{weeklyGoals.length}</span>
           </div>
           <div className="space-y-3">
             {weeklyGoals.map((goal) => {
               const config = goalCategoryConfig[goal.category];
               const Icon = config.icon;
               return (
-                <div key={goal.id} className={`rounded-lg bg-[#0f1419] p-3 ${goal.isCompleted ? 'opacity-60' : ''}`}>
+                <div key={goal.id} className={`rounded-lg bg-background p-3 ${goal.isCompleted ? 'opacity-60' : ''}`}>
                   <div className="flex items-start gap-3">
                     <div className={`rounded-lg p-1.5 ${config.bg}`}>
                       <Icon className={`h-4 w-4 ${config.color}`} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className={`text-sm font-medium ${goal.isCompleted ? 'text-slate-400 line-through' : 'text-white'}`}>
+                        <p className={`text-sm font-medium ${goal.isCompleted ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                           {goal.title}
                         </p>
-                        {goal.isCompleted && <CheckCircle className="h-3 w-3 text-emerald-400" />}
+                        {goal.isCompleted && <CheckCircle className="h-3 w-3 text-success" />}
                       </div>
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="flex-1 h-1 rounded-full bg-[#374151]">
+                        <div className="flex-1 h-1 rounded-full bg-border">
                           <div
-                            className={`h-1 rounded-full ${goal.isCompleted ? 'bg-emerald-500' : 'bg-[#ff6b35]'}`}
+                            className={`h-1 rounded-full ${goal.isCompleted ? 'bg-success' : 'bg-primary'}`}
                             style={{ width: `${goal.progress}%` }}
                           />
                         </div>
-                        <span className="text-[10px] text-slate-400">{goal.progress}%</span>
+                        <span className="text-[10px] text-muted-foreground">{goal.progress}%</span>
                       </div>
                     </div>
                   </div>
@@ -380,19 +380,19 @@ export function MyDashboard() {
         </div>
 
         {/* Bottlenecks */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-5">
-          <h2 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Bottlenecks</h2>
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Bottlenecks</h2>
           <div className="space-y-3">
             {bottlenecks.map((item) => (
-              <div key={item.id} className="rounded-lg bg-[#0f1419] p-3">
+              <div key={item.id} className="rounded-lg bg-background p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-white">{item.area}</span>
+                  <span className="text-sm font-medium text-foreground">{item.area}</span>
                   <span className={`text-[10px] font-medium uppercase ${impactColors[item.impact]}`}>
                     {item.impact}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mb-2">{item.issue}</p>
-                <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <p className="text-xs text-muted-foreground mb-2">{item.issue}</p>
+                <div className="flex items-center gap-2 text-xs text-success">
                   <CheckCircle className="h-3 w-3" />
                   <span>{item.suggestion}</span>
                 </div>
@@ -404,19 +404,19 @@ export function MyDashboard() {
 
       {/* Kanban Board */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-4">Task Board</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Task Board</h2>
         <div className="grid grid-cols-5 gap-4 overflow-x-auto">
           {kanbanColumns.map((column) => (
             <div
               key={column.key}
-              className={`rounded-xl border-t-2 ${column.color} border border-[#374151] bg-[#1a1f2e] min-h-[400px]`}
+              className={`rounded-xl border-t-2 ${column.color} border border-border bg-card min-h-[400px]`}
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(column.key)}
             >
-              <div className="p-3 border-b border-[#374151]">
+              <div className="p-3 border-b border-border">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-white">{column.label}</span>
-                  <span className="text-xs text-slate-400 bg-[#0f1419] px-2 py-0.5 rounded">
+                  <span className="text-sm font-medium text-foreground">{column.label}</span>
+                  <span className="text-xs text-muted-foreground bg-background px-2 py-0.5 rounded">
                     {tasks[column.key].length}
                   </span>
                 </div>
@@ -429,17 +429,17 @@ export function MyDashboard() {
                       key={task.id}
                       draggable
                       onDragStart={() => handleDragStart(task, column.key)}
-                      className="rounded-lg bg-[#0f1419] p-3 cursor-grab active:cursor-grabbing hover:bg-[#151922] transition-colors group"
+                      className="rounded-lg bg-background p-3 cursor-grab active:cursor-grabbing hover:bg-muted/50 transition-colors group"
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <GripVertical className="h-4 w-4 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-white flex-1">{task.title}</p>
+                        <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-foreground flex-1">{task.title}</p>
                         <button className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreHorizontal className="h-4 w-4 text-slate-400" />
+                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </div>
                       {task.description && (
-                        <p className="text-xs text-slate-500 mb-2 ml-6">{task.description}</p>
+                        <p className="text-xs text-muted-foreground mb-2 ml-6">{task.description}</p>
                       )}
                       <div className="flex items-center gap-2 flex-wrap ml-6">
                         <span className={`text-[10px] px-1.5 py-0.5 rounded ${taskCategoryColors[task.category]}`}>
@@ -450,13 +450,13 @@ export function MyDashboard() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 mt-2 ml-6">
-                        <Calendar className="h-3 w-3 text-slate-500" />
+                        <Calendar className="h-3 w-3 text-muted-foreground" />
                         <span className={`text-[10px] ${deadline.color}`}>{deadline.text}</span>
                       </div>
                     </div>
                   );
                 })}
-                <button className="w-full rounded-lg border border-dashed border-[#374151] p-2 text-xs text-slate-500 hover:text-slate-400 hover:border-slate-400 transition-colors flex items-center justify-center gap-1">
+                <button className="w-full rounded-lg border border-dashed border-border p-2 text-xs text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors flex items-center justify-center gap-1">
                   <Plus className="h-3 w-3" />
                   Add Task
                 </button>

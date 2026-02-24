@@ -5,12 +5,12 @@ import { usePLSync } from '../../hooks/usePLData';
 import { supabase } from '../../lib/supabase';
 
 const statusConfig = {
-  pending: { icon: Clock, color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
-  running: { icon: RefreshCw, color: 'text-blue-400', bg: 'bg-blue-500/20', animate: true },
-  completed: { icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  failed: { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/20' },
-  success: { icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  partial: { icon: AlertCircle, color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
+  pending: { icon: Clock, color: 'text-warning', bg: 'bg-warning/20' },
+  running: { icon: RefreshCw, color: 'text-info', bg: 'bg-info/20', animate: true },
+  completed: { icon: CheckCircle, color: 'text-success', bg: 'bg-success/20' },
+  failed: { icon: XCircle, color: 'text-error', bg: 'bg-error/20' },
+  success: { icon: CheckCircle, color: 'text-success', bg: 'bg-success/20' },
+  partial: { icon: AlertCircle, color: 'text-warning', bg: 'bg-warning/20' },
 };
 
 // Pre-configured sheet ID for The Roof HQ
@@ -230,59 +230,59 @@ export function SyncData() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">Data Sync</h1>
-        <p className="text-sm text-slate-400 mt-1">Import data from Google Sheets</p>
+        <h1 className="text-2xl font-semibold text-foreground">Data Sync</h1>
+        <p className="text-sm text-muted-foreground mt-1">Import data from Google Sheets</p>
       </div>
 
       {/* Sync Form */}
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-center gap-2 mb-4">
-          <FileSpreadsheet className="h-5 w-5 text-emerald-400" />
-          <h2 className="text-lg font-semibold text-white">Google Sheets Sync</h2>
+          <FileSpreadsheet className="h-5 w-5 text-success" />
+          <h2 className="text-lg font-semibold text-foreground">Google Sheets Sync</h2>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Google Sheets URL or ID</label>
+            <label className="block text-sm text-muted-foreground mb-1">Google Sheets URL or ID</label>
             <input
               type="text"
               value={sheetUrl}
               onChange={(e) => setSheetUrl(e.target.value)}
               placeholder="https://docs.google.com/spreadsheets/d/... or just the ID"
-              className="w-full rounded-lg bg-[#0f1419] border border-[#374151] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#ff6b35]"
+              className="w-full rounded-lg bg-background border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Sheet Name</label>
+            <label className="block text-sm text-muted-foreground mb-1">Sheet Name</label>
             <input
               type="text"
               value={sheetName}
               onChange={(e) => setSheetName(e.target.value)}
               placeholder="Sales26*"
-              className="w-full rounded-lg bg-[#0f1419] border border-[#374151] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#ff6b35]"
+              className="w-full rounded-lg bg-background border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
             />
-            <p className="text-xs text-slate-500 mt-1">The tab name in your spreadsheet</p>
+            <p className="text-xs text-muted-foreground mt-1">The tab name in your spreadsheet</p>
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/30 p-3">
-              <AlertCircle className="h-4 w-4 text-red-400" />
-              <span className="text-sm text-red-400">{error}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-error/10 border border-error/30 p-3">
+              <AlertCircle className="h-4 w-4 text-error" />
+              <span className="text-sm text-error">{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-3">
-              <CheckCircle className="h-4 w-4 text-emerald-400" />
-              <span className="text-sm text-emerald-400">{success}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-success/10 border border-success/30 p-3">
+              <CheckCircle className="h-4 w-4 text-success" />
+              <span className="text-sm text-success">{success}</span>
             </div>
           )}
 
           <button
             onClick={handleSync}
             disabled={syncSheets.isPending || !sheetUrl}
-            className="flex items-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`h-4 w-4 ${syncSheets.isPending ? 'animate-spin' : ''}`} />
             {syncSheets.isPending ? 'Syncing...' : 'Sync Now'}
@@ -291,51 +291,51 @@ export function SyncData() {
       </div>
 
       {/* P&L Sync Form */}
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-center gap-2 mb-4">
           <DollarSign className="h-5 w-5 text-purple-400" />
-          <h2 className="text-lg font-semibold text-white">P&L Data Sync</h2>
+          <h2 className="text-lg font-semibold text-foreground">P&L Data Sync</h2>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Google Sheets URL or ID</label>
+            <label className="block text-sm text-muted-foreground mb-1">Google Sheets URL or ID</label>
             <input
               type="text"
               value={pnlSheetUrl}
               onChange={(e) => setPnlSheetUrl(e.target.value)}
               placeholder="https://docs.google.com/spreadsheets/d/... or just the ID"
-              className="w-full rounded-lg bg-[#0f1419] border border-[#374151] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#ff6b35]"
+              className="w-full rounded-lg bg-background border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-slate-400 mb-1">P&L Sheet</label>
+            <label className="block text-sm text-muted-foreground mb-1">P&L Sheet</label>
             <select
               value={pnlSheetName}
               onChange={(e) => setPnlSheetName(e.target.value)}
-              className="w-full rounded-lg bg-[#0f1419] border border-[#374151] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff6b35]"
+              className="w-full rounded-lg bg-background border border-border px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-ring"
             >
               {PNL_SHEETS.map(sheet => (
                 <option key={sheet.value} value={sheet.value}>{sheet.label}</option>
               ))}
             </select>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               P&L data is typically available 15 days after month end
             </p>
           </div>
 
           {pnlError && (
-            <div className="flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/30 p-3">
-              <AlertCircle className="h-4 w-4 text-red-400" />
-              <span className="text-sm text-red-400">{pnlError}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-error/10 border border-error/30 p-3">
+              <AlertCircle className="h-4 w-4 text-error" />
+              <span className="text-sm text-error">{pnlError}</span>
             </div>
           )}
 
           {pnlSuccess && (
-            <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-3">
-              <CheckCircle className="h-4 w-4 text-emerald-400" />
-              <span className="text-sm text-emerald-400">{pnlSuccess}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-success/10 border border-success/30 p-3">
+              <CheckCircle className="h-4 w-4 text-success" />
+              <span className="text-sm text-success">{pnlSuccess}</span>
             </div>
           )}
 
@@ -351,7 +351,7 @@ export function SyncData() {
             <button
               onClick={handleSyncBothYears}
               disabled={pnlSyncing || !pnlSheetUrl}
-              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-lg bg-success px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-success/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw className={`h-4 w-4 ${pnlSyncing ? 'animate-spin' : ''}`} />
               {pnlSyncing ? 'Syncing...' : 'Sync Both Years'}
@@ -361,24 +361,24 @@ export function SyncData() {
       </div>
 
       {/* Debug Section */}
-      <div className="rounded-xl border border-amber-500/30 bg-[#1a1f2e] p-6">
+      <div className="rounded-xl border border-warning/30 bg-card p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Bug className="h-5 w-5 text-amber-400" />
-          <h2 className="text-lg font-semibold text-white">Debug: Check Database Values</h2>
+          <Bug className="h-5 w-5 text-warning" />
+          <h2 className="text-lg font-semibold text-foreground">Debug: Check Database Values</h2>
         </div>
         
         <button
           onClick={handleDebugQuery}
           disabled={debugLoading}
-          className="flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-700 transition-colors disabled:opacity-50 mb-4"
+          className="flex items-center gap-2 rounded-lg bg-warning px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-warning/90 transition-colors disabled:opacity-50 mb-4"
         >
           <Bug className={`h-4 w-4 ${debugLoading ? 'animate-spin' : ''}`} />
           {debugLoading ? 'Querying...' : 'Check March 2025 Budget Data'}
         </button>
 
         {debugData && (
-          <div className="bg-[#0f1419] rounded-lg p-4 overflow-auto max-h-96">
-            <pre className="text-xs text-slate-300 whitespace-pre-wrap">
+          <div className="bg-background rounded-lg p-4 overflow-auto max-h-96">
+            <pre className="text-xs text-foreground whitespace-pre-wrap">
               {JSON.stringify(debugData, null, 2)}
             </pre>
           </div>
@@ -386,25 +386,25 @@ export function SyncData() {
       </div>
 
       {/* Setup Instructions */}
-      <div className="rounded-xl border border-dashed border-[#374151] bg-[#1a1f2e]/50 p-6">
-        <h3 className="text-sm font-semibold text-white mb-3">Setup Requirements</h3>
-        <ol className="space-y-2 text-sm text-slate-400">
+      <div className="rounded-xl border border-dashed border-border bg-card/50 p-6">
+        <h3 className="text-sm font-semibold text-foreground mb-3">Setup Requirements</h3>
+        <ol className="space-y-2 text-sm text-muted-foreground">
           <li>1. Your Google Sheet must be set to "Anyone with link can view"</li>
-          <li>2. The Edge Function requires a <code className="text-[#ff6b35]">GOOGLE_API_KEY</code> secret</li>
-          <li>3. <strong>Sales sheets:</strong> C=Date, H=TotalRevenue (VND), AC=Pax, AF=AvgSpend</li>
-          <li>4. <strong>P&L sheets:</strong> Monthly data with categories in columns A-B, months starting at column H</li>
+          <li>2. The Edge Function requires a <code className="text-primary">GOOGLE_API_KEY</code> secret</li>
+          <li>3. <strong className="text-foreground">Sales sheets:</strong> C=Date, H=TotalRevenue (VND), AC=Pax, AF=AvgSpend</li>
+          <li>4. <strong className="text-foreground">P&L sheets:</strong> Monthly data with categories in columns A-B, months starting at column H</li>
           <li>5. Date format: DD.MM.YYYY (European format)</li>
         </ol>
       </div>
 
       {/* Sync History */}
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Sync History</h2>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Sync History</h2>
         
         {logsLoading ? (
-          <p className="text-slate-400">Loading...</p>
+          <p className="text-muted-foreground">Loading...</p>
         ) : !syncLogs || syncLogs.length === 0 ? (
-          <p className="text-slate-400 text-sm">No sync history yet</p>
+          <p className="text-muted-foreground text-sm">No sync history yet</p>
         ) : (
           <div className="space-y-3">
             {syncLogs.map((log) => {
@@ -412,25 +412,25 @@ export function SyncData() {
               const Icon = config.icon;
               
               return (
-                <div key={log.id} className="flex items-center justify-between rounded-lg bg-[#0f1419] p-4">
+                <div key={log.id} className="flex items-center justify-between rounded-lg bg-background p-4">
                   <div className="flex items-center gap-3">
                     <div className={`rounded-lg p-2 ${config.bg}`}>
                       <Icon className={`h-4 w-4 ${config.color} ${config.animate ? 'animate-spin' : ''}`} />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white capitalize">
+                      <p className="text-sm font-medium text-foreground capitalize">
                         {log.syncType.replace('_', ' ')}
                       </p>
-                      <p className="text-xs text-slate-400">{formatTime(log.startedAt)}</p>
+                      <p className="text-xs text-muted-foreground">{formatTime(log.startedAt)}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     {log.status === 'completed' ? (
-                      <p className="text-sm text-emerald-400">{log.recordsProcessed} records</p>
+                      <p className="text-sm text-success">{log.recordsProcessed} records</p>
                     ) : log.status === 'failed' ? (
-                      <p className="text-xs text-red-400 max-w-xs truncate">{log.errorMessage}</p>
+                      <p className="text-xs text-error max-w-xs truncate">{log.errorMessage}</p>
                     ) : (
-                      <p className="text-sm text-slate-400 capitalize">{log.status}</p>
+                      <p className="text-sm text-muted-foreground capitalize">{log.status}</p>
                     )}
                   </div>
                 </div>

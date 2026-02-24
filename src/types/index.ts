@@ -2,7 +2,7 @@
 // Core Types
 // =============================================
 
-export type UserRole = 'owner' | 'manager' | 'staff';
+export type UserRole = 'owner' | 'manager' | 'staff' | 'investor';
 export type ManagerType = 'bar' | 'floor' | 'marketing' | null;
 export type EmploymentType = 'full_time' | 'part_time' | 'casual';
 

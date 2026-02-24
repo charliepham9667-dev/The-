@@ -59,10 +59,10 @@ const priorities = [
 ];
 
 const categoryConfig = {
-  revenue: { icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  service: { icon: Target, color: 'text-blue-400', bg: 'bg-blue-500/20' },
+  revenue: { icon: DollarSign, color: 'text-success', bg: 'bg-success/20' },
+  service: { icon: Target, color: 'text-info', bg: 'bg-info/20' },
   team: { icon: Users, color: 'text-purple-400', bg: 'bg-purple-500/20' },
-  operations: { icon: TrendingUp, color: 'text-orange-400', bg: 'bg-orange-500/20' },
+  operations: { icon: TrendingUp, color: 'text-primary', bg: 'bg-primary/20' },
 };
 
 export function WeeklyFocus() {
@@ -80,45 +80,45 @@ export function WeeklyFocus() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Weekly Focus</h1>
-          <p className="text-sm text-slate-400 mt-1">Week of Jan 27 - Feb 2, 2026</p>
+          <h1 className="text-2xl font-semibold text-foreground">Weekly Focus</h1>
+          <p className="text-sm text-muted-foreground mt-1">Week of Jan 27 - Feb 2, 2026</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors">
+        <button className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
           <Plus className="h-4 w-4" />
           Add Goal
         </button>
       </div>
 
       {/* Progress Overview */}
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Weekly Progress</h2>
-          <span className="text-sm text-slate-400">{completedGoals}/{weeklyGoals.length} goals completed</span>
+          <h2 className="text-lg font-semibold text-foreground">Weekly Progress</h2>
+          <span className="text-sm text-muted-foreground">{completedGoals}/{weeklyGoals.length} goals completed</span>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative h-20 w-20">
             <svg className="h-20 w-20 -rotate-90 transform">
-              <circle cx="40" cy="40" r="36" stroke="#374151" strokeWidth="6" fill="none" />
+              <circle cx="40" cy="40" r="36" className="stroke-border" strokeWidth="6" fill="none" />
               <circle
                 cx="40"
                 cy="40"
                 r="36"
-                stroke="#ff6b35"
+                stroke="#F5793B"
                 strokeWidth="6"
                 fill="none"
                 strokeDasharray={`${(overallProgress / 100) * 226} 226`}
                 strokeLinecap="round"
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-white">
+            <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-foreground">
               {overallProgress}%
             </span>
           </div>
           <div className="flex-1">
-            <p className="text-sm text-slate-400 mb-2">Overall weekly goal completion</p>
-            <div className="h-2 rounded-full bg-[#374151]">
+            <p className="text-sm text-muted-foreground mb-2">Overall weekly goal completion</p>
+            <div className="h-2 rounded-full bg-border">
               <div
-                className="h-2 rounded-full bg-[#ff6b35] transition-all"
+                className="h-2 rounded-full bg-primary transition-all"
                 style={{ width: `${overallProgress}%` }}
               />
             </div>
@@ -129,14 +129,14 @@ export function WeeklyFocus() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Goals */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-semibold text-white">Weekly Goals</h2>
+          <h2 className="text-lg font-semibold text-foreground">Weekly Goals</h2>
           {weeklyGoals.map((goal) => {
             const config = categoryConfig[goal.category];
             const Icon = config.icon;
             return (
               <div
                 key={goal.id}
-                className={`rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 ${
+                className={`rounded-xl border border-border bg-card p-4 ${
                   goal.isCompleted ? 'opacity-60' : ''
                 }`}
               >
@@ -146,27 +146,27 @@ export function WeeklyFocus() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className={`text-sm font-medium ${goal.isCompleted ? 'text-slate-400 line-through' : 'text-white'}`}>
+                      <p className={`text-sm font-medium ${goal.isCompleted ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                         {goal.title}
                       </p>
                       {goal.isCompleted && (
-                        <CheckCircle className="h-4 w-4 text-emerald-400" />
+                        <CheckCircle className="h-4 w-4 text-success" />
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 mb-3">{goal.description}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{goal.description}</p>
                     <div className="flex items-center gap-4">
                       <div className="flex-1">
-                        <div className="h-1.5 rounded-full bg-[#374151]">
+                        <div className="h-1.5 rounded-full bg-border">
                           <div
                             className={`h-1.5 rounded-full transition-all ${
-                              goal.isCompleted ? 'bg-emerald-500' : 'bg-[#ff6b35]'
+                              goal.isCompleted ? 'bg-success' : 'bg-primary'
                             }`}
                             style={{ width: `${goal.progress}%` }}
                           />
                         </div>
                       </div>
-                      <span className="text-xs text-slate-400">{goal.progress}%</span>
-                      <span className="text-xs font-medium text-white">{goal.target}</span>
+                      <span className="text-xs text-muted-foreground">{goal.progress}%</span>
+                      <span className="text-xs font-medium text-foreground">{goal.target}</span>
                     </div>
                   </div>
                 </div>
@@ -176,8 +176,8 @@ export function WeeklyFocus() {
         </div>
 
         {/* Priority Tasks */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Priority Tasks</h2>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Priority Tasks</h2>
           <div className="space-y-3">
             {todos.map((todo) => (
               <button
@@ -186,17 +186,17 @@ export function WeeklyFocus() {
                 className="flex items-start gap-3 w-full text-left group"
               >
                 {todo.done ? (
-                  <CheckCircle className="h-5 w-5 text-emerald-400 mt-0.5 shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-success mt-0.5 shrink-0" />
                 ) : (
-                  <Circle className="h-5 w-5 text-slate-500 mt-0.5 shrink-0 group-hover:text-slate-400" />
+                  <Circle className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0 group-hover:text-foreground" />
                 )}
-                <span className={`text-sm ${todo.done ? 'text-slate-500 line-through' : 'text-slate-300'}`}>
+                <span className={`text-sm ${todo.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                   {todo.text}
                 </span>
               </button>
             ))}
           </div>
-          <button className="flex items-center gap-2 mt-4 text-sm text-[#ff6b35] hover:underline">
+          <button className="flex items-center gap-2 mt-4 text-sm text-primary hover:underline">
             <Plus className="h-4 w-4" />
             Add task
           </button>

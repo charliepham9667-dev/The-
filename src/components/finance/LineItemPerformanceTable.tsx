@@ -36,9 +36,9 @@ interface LineItem {
 export function LineItemPerformanceTable({ actualData, budgetData, className = '' }: LineItemPerformanceTableProps) {
   if (!actualData) {
     return (
-      <div className={`rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 ${className}`}>
-        <h3 className="text-sm font-medium text-white mb-4">Detailed P&L Financial Statement</h3>
-        <div className="flex items-center justify-center py-8 text-slate-500">
+      <div className={`rounded-xl border border-border bg-card p-4 ${className}`}>
+        <h3 className="text-sm font-medium text-foreground mb-4">Detailed P&L Financial Statement</h3>
+        <div className="flex items-center justify-center py-8 text-muted-foreground">
           No data available
         </div>
       </div>
@@ -130,13 +130,13 @@ export function LineItemPerformanceTable({ actualData, budgetData, className = '
   );
 
   return (
-    <div className={`rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 ${className}`}>
+    <div className={`rounded-xl border border-border bg-card p-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-medium text-white">Detailed P&L Financial Statement</h3>
-          <p className="text-xs text-slate-500 mt-0.5">MTD Actual vs Budget comparison</p>
+          <h3 className="text-sm font-medium text-foreground">Detailed P&L Financial Statement</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">MTD Actual vs Budget comparison</p>
         </div>
-        <button className="flex items-center gap-1 text-xs text-slate-400 hover:text-white border border-[#374151] rounded-lg px-2 py-1">
+        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-2 py-1">
           {monthName} {actualData.year}
           <ChevronDown className="h-3 w-3" />
         </button>
@@ -146,12 +146,12 @@ export function LineItemPerformanceTable({ actualData, budgetData, className = '
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#374151]">
-              <th className="text-left text-xs font-medium text-[#D4A574] uppercase py-3 pr-4">Account Description</th>
-              <th className="text-right text-xs font-medium text-[#D4A574] uppercase py-3 px-4">MTD Actual</th>
-              <th className="text-right text-xs font-medium text-[#D4A574] uppercase py-3 px-4">MTD Budget</th>
-              <th className="text-right text-xs font-medium text-[#D4A574] uppercase py-3 px-4">Variance (đ)</th>
-              <th className="text-right text-xs font-medium text-[#D4A574] uppercase py-3 pl-4">Variance (%)</th>
+            <tr className="border-b border-border">
+              <th className="text-left text-xs font-medium text-primary uppercase py-3 pr-4">Account Description</th>
+              <th className="text-right text-xs font-medium text-primary uppercase py-3 px-4">MTD Actual</th>
+              <th className="text-right text-xs font-medium text-primary uppercase py-3 px-4">MTD Budget</th>
+              <th className="text-right text-xs font-medium text-primary uppercase py-3 px-4">Variance (đ)</th>
+              <th className="text-right text-xs font-medium text-primary uppercase py-3 pl-4">Variance (%)</th>
             </tr>
           </thead>
           <tbody>
@@ -192,14 +192,14 @@ export function LineItemPerformanceTable({ actualData, budgetData, className = '
               const variancePercent = item.budget !== 0 ? (variance / Math.abs(item.budget)) * 100 : 0;
               
               // For all items: positive variance = green (good), negative variance = red (bad)
-              const varianceColor = variance === 0 ? 'text-slate-400' : 
-                                   variance > 0 ? 'text-emerald-400' : 'text-red-400';
+              const varianceColor = variance === 0 ? 'text-muted-foreground' : 
+                                   variance > 0 ? 'text-success' : 'text-error';
 
               if (item.isSection) {
                 return (
-                  <tr key={index} className="bg-[#1e2433]">
+                  <tr key={index} className="bg-muted/50">
                     <td colSpan={5} className="py-3 px-2">
-                      <span className="text-sm font-semibold text-[#D4A574]">{item.name}</span>
+                      <span className="text-sm font-semibold text-primary">{item.name}</span>
                     </td>
                   </tr>
                 );
@@ -211,26 +211,26 @@ export function LineItemPerformanceTable({ actualData, budgetData, className = '
               return (
                 <tr 
                   key={index} 
-                  className={`border-b border-[#374151]/30 last:border-0 ${
-                    isNetIncome ? 'bg-[#D4A574]/20' : isMainTotal ? 'bg-[#1e2433]' : item.isTotal ? 'bg-[#1e2433]/50' : ''
+                  className={`border-b border-border/30 last:border-0 ${
+                    isNetIncome ? 'bg-primary/20' : isMainTotal ? 'bg-muted/50' : item.isTotal ? 'bg-muted/30' : ''
                   }`}
                 >
                   <td className={`py-2.5 pr-4 ${item.indent ? 'pl-6' : ''}`}>
-                    <span className={`text-sm ${item.isTotal ? 'font-semibold text-white' : 'text-slate-300'} ${
-                      isNetIncome ? 'text-[#D4A574] font-bold text-base' : isMainTotal ? 'font-bold' : ''
+                    <span className={`text-sm ${item.isTotal ? 'font-semibold text-foreground' : 'text-foreground'} ${
+                      isNetIncome ? 'text-primary font-bold text-base' : isMainTotal ? 'font-bold' : ''
                     }`}>
                       {item.name}
                     </span>
                   </td>
                   <td className="py-2.5 px-4 text-right">
-                    <span className={`text-sm tabular-nums ${item.isTotal ? 'font-semibold text-white' : 'text-slate-300'} ${
-                      isNetIncome ? 'text-[#D4A574] font-bold text-base' : isMainTotal ? 'font-bold' : ''
+                    <span className={`text-sm tabular-nums ${item.isTotal ? 'font-semibold text-foreground' : 'text-foreground'} ${
+                      isNetIncome ? 'text-primary font-bold text-base' : isMainTotal ? 'font-bold' : ''
                     }`}>
                       {formatVND(item.actual)}
                     </span>
                   </td>
                   <td className="py-2.5 px-4 text-right">
-                    <span className="text-sm text-slate-400 tabular-nums">
+                    <span className="text-sm text-muted-foreground tabular-nums">
                       {item.budget !== 0 ? formatVND(item.budget) : '—'}
                     </span>
                   </td>
@@ -252,7 +252,7 @@ export function LineItemPerformanceTable({ actualData, budgetData, className = '
       </div>
       
       {/* Footer */}
-      <div className="mt-4 pt-3 border-t border-[#374151] flex items-center justify-between text-xs text-slate-500">
+      <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
         <span>Last synced: {actualData.syncedAt ? new Date(actualData.syncedAt).toLocaleString() : 'Unknown'}</span>
         <span>Fiscal Year: Jan 01 - Dec 31</span>
       </div>

@@ -4,11 +4,11 @@ import { useAuthStore } from '../../stores/authStore';
 import { useShifts, useClockInOut } from '../../hooks/useShifts';
 
 const statusConfig = {
-  scheduled: { label: 'Scheduled', color: 'text-blue-400', bg: 'bg-blue-500/20' },
-  in_progress: { label: 'In Progress', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  completed: { label: 'Completed', color: 'text-slate-400', bg: 'bg-slate-500/20' },
-  no_show: { label: 'No Show', color: 'text-red-400', bg: 'bg-red-500/20' },
-  cancelled: { label: 'Cancelled', color: 'text-slate-500', bg: 'bg-slate-500/10' },
+  scheduled: { label: 'Scheduled', color: 'text-info', bg: 'bg-info/20' },
+  in_progress: { label: 'In Progress', color: 'text-success', bg: 'bg-success/20' },
+  completed: { label: 'Completed', color: 'text-muted-foreground', bg: 'bg-muted' },
+  no_show: { label: 'No Show', color: 'text-error', bg: 'bg-error/20' },
+  cancelled: { label: 'Cancelled', color: 'text-muted-foreground', bg: 'bg-muted/50' },
 };
 
 export function MyShifts() {
@@ -45,23 +45,23 @@ export function MyShifts() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">My Shifts</h1>
-          <p className="text-sm text-slate-400 mt-1">View and manage your scheduled shifts</p>
+          <h1 className="text-2xl font-semibold text-foreground">My Shifts</h1>
+          <p className="text-sm text-muted-foreground mt-1">View and manage your scheduled shifts</p>
         </div>
       </div>
 
       {/* Week Navigation */}
-      <div className="flex items-center justify-between rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
+      <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
         <button
           onClick={() => setWeekOffset(w => w - 1)}
-          className="rounded-lg p-2 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors"
+          className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <span className="text-white font-medium">{formatWeekRange()}</span>
+        <span className="text-foreground font-medium">{formatWeekRange()}</span>
         <button
           onClick={() => setWeekOffset(w => w + 1)}
-          className="rounded-lg p-2 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors"
+          className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
@@ -70,10 +70,10 @@ export function MyShifts() {
       {/* Shifts List */}
       <div className="space-y-3">
         {isLoading ? (
-          <div className="text-center py-8 text-slate-400">Loading shifts...</div>
+          <div className="text-center py-8 text-muted-foreground">Loading shifts...</div>
         ) : myShifts.length === 0 ? (
-          <div className="text-center py-8 rounded-xl border border-[#374151] bg-[#1a1f2e]">
-            <p className="text-slate-400">No shifts scheduled for this week</p>
+          <div className="text-center py-8 rounded-xl border border-border bg-card">
+            <p className="text-muted-foreground">No shifts scheduled for this week</p>
           </div>
         ) : (
           weekDays.map((day) => {
@@ -86,23 +86,23 @@ export function MyShifts() {
                 key={dayStr} 
                 className={`rounded-xl border p-4 ${
                   isToday 
-                    ? 'border-[#ff6b35]/30 bg-[#ff6b35]/5' 
-                    : 'border-[#374151] bg-[#1a1f2e]'
+                    ? 'border-primary/30 bg-primary/5' 
+                    : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-sm font-medium ${isToday ? 'text-[#ff6b35]' : 'text-white'}`}>
+                  <span className={`text-sm font-medium ${isToday ? 'text-primary' : 'text-foreground'}`}>
                     {day.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                   </span>
                   {isToday && (
-                    <span className="rounded-full bg-[#ff6b35] px-2 py-0.5 text-[10px] font-medium text-white">
+                    <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
                       TODAY
                     </span>
                   )}
                 </div>
 
                 {dayShifts.length === 0 ? (
-                  <p className="text-sm text-slate-500">No shift</p>
+                  <p className="text-sm text-muted-foreground">No shift</p>
                 ) : (
                   <div className="space-y-2">
                     {dayShifts.map((shift) => {
@@ -111,13 +111,13 @@ export function MyShifts() {
                       const canClockOut = shift.status === 'in_progress';
 
                       return (
-                        <div key={shift.id} className="flex items-center justify-between rounded-lg bg-[#0f1419] p-3">
+                        <div key={shift.id} className="flex items-center justify-between rounded-lg bg-background p-3">
                           <div className="flex items-center gap-4">
                             <div>
-                              <p className="text-sm font-medium text-white">
+                              <p className="text-sm font-medium text-foreground">
                                 {shift.startTime} - {shift.endTime}
                               </p>
-                              <p className="text-xs text-slate-400 capitalize">{shift.role}</p>
+                              <p className="text-xs text-muted-foreground capitalize">{shift.role}</p>
                             </div>
                             <span className={`rounded-full px-2 py-0.5 text-xs ${config.bg} ${config.color}`}>
                               {config.label}
@@ -129,7 +129,7 @@ export function MyShifts() {
                               <button
                                 onClick={() => handleClockAction(shift.id, 'clock_in')}
                                 disabled={clockInOut.isPending}
-                                className="flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-600 transition-colors"
+                                className="flex items-center gap-1 rounded-lg bg-success px-3 py-1.5 text-xs font-medium text-white hover:bg-success/90 transition-colors"
                               >
                                 <Clock className="h-3 w-3" />
                                 Clock In
@@ -139,14 +139,14 @@ export function MyShifts() {
                               <button
                                 onClick={() => handleClockAction(shift.id, 'clock_out')}
                                 disabled={clockInOut.isPending}
-                                className="flex items-center gap-1 rounded-lg bg-red-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-600 transition-colors"
+                                className="flex items-center gap-1 rounded-lg bg-error px-3 py-1.5 text-xs font-medium text-white hover:bg-error/90 transition-colors"
                               >
                                 <XCircle className="h-3 w-3" />
                                 Clock Out
                               </button>
                             )}
                             {shift.status === 'completed' && (
-                              <CheckCircle className="h-5 w-5 text-emerald-400" />
+                              <CheckCircle className="h-5 w-5 text-success" />
                             )}
                           </div>
                         </div>

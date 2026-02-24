@@ -108,17 +108,17 @@ export function PLPerformance() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-red-400">
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-error">
         <AlertCircle className="h-8 w-8 mb-2" />
         <p>Failed to load P&L data</p>
-        <p className="text-sm text-slate-500 mt-1">{(error as Error).message}</p>
+        <p className="text-sm text-muted-foreground mt-1">{(error as Error).message}</p>
       </div>
     );
   }
@@ -133,17 +133,17 @@ export function PLPerformance() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white">P&L Performance Overview</h1>
-            <p className="text-sm text-slate-400 mt-1">Real-time financial health and variance reporting</p>
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">P&L Performance Overview</h1>
+            <p className="text-sm text-muted-foreground mt-1">Real-time financial health and variance reporting</p>
           </div>
           
           {/* Action buttons */}
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 border border-[#374151] rounded-lg hover:bg-[#374151] transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground border border-border rounded-lg hover:bg-muted transition-colors">
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Export</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-[#D4A574] rounded-lg hover:bg-[#C49464] transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 text-sm text-primary-foreground bg-primary rounded-lg hover:bg-primary/90 transition-colors">
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Download PDF</span>
             </button>
@@ -152,7 +152,7 @@ export function PLPerformance() {
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 text-slate-400 text-sm mr-2">
+          <div className="flex items-center gap-1 text-muted-foreground text-sm mr-2">
             <Filter className="h-4 w-4" />
             <span className="hidden sm:inline">Filters:</span>
           </div>
@@ -161,20 +161,20 @@ export function PLPerformance() {
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => { setShowYearDropdown(!showYearDropdown); setShowMonthDropdown(false); }}
-              className="flex items-center gap-2 rounded-lg border border-[#374151] bg-[#1a1f2e] px-3 py-2 text-sm text-white hover:bg-[#374151] transition-colors min-h-[40px]"
+              className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors min-h-[40px]"
             >
-              <Calendar className="h-4 w-4 text-slate-400" />
+              <Calendar className="h-4 w-4 text-muted-foreground" />
               <span>{selectedYear}</span>
-              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
             </button>
             {showYearDropdown && (
-              <div className="absolute left-0 mt-2 w-28 rounded-lg border border-[#374151] bg-[#1a1f2e] shadow-xl z-20">
+              <div className="absolute left-0 mt-2 w-28 rounded-lg border border-border bg-card shadow-xl z-20">
                 {availableYears.map(year => (
                   <button
                     key={year}
                     onClick={() => { setSelectedYear(year); setSelectedMonth('latest'); setShowYearDropdown(false); }}
-                    className={`w-full px-4 py-2 text-sm text-left hover:bg-[#374151] transition-colors ${
-                      year === selectedYear ? 'text-[#D4A574]' : 'text-white'
+                    className={`w-full px-4 py-2 text-sm text-left hover:bg-muted transition-colors ${
+                      year === selectedYear ? 'text-primary' : 'text-foreground'
                     } first:rounded-t-lg last:rounded-b-lg`}
                   >
                     {year}
@@ -188,17 +188,17 @@ export function PLPerformance() {
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => { setShowMonthDropdown(!showMonthDropdown); setShowYearDropdown(false); }}
-              className="flex items-center gap-2 rounded-lg border border-[#374151] bg-[#1a1f2e] px-3 py-2 text-sm text-white hover:bg-[#374151] transition-colors min-h-[40px]"
+              className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors min-h-[40px]"
             >
               <span>{selectedMonth === 'latest' ? 'Latest' : MONTH_SHORT[selectedMonth - 1]}</span>
-              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
             </button>
             {showMonthDropdown && (
-              <div className="absolute left-0 mt-2 w-32 rounded-lg border border-[#374151] bg-[#1a1f2e] shadow-xl z-20 max-h-[300px] overflow-y-auto">
+              <div className="absolute left-0 mt-2 w-32 rounded-lg border border-border bg-card shadow-xl z-20 max-h-[300px] overflow-y-auto">
                 <button
                   onClick={() => { setSelectedMonth('latest'); setShowMonthDropdown(false); }}
-                  className={`w-full px-4 py-2 text-sm text-left hover:bg-[#374151] transition-colors rounded-t-lg ${
-                    selectedMonth === 'latest' ? 'text-[#D4A574]' : 'text-white'
+                  className={`w-full px-4 py-2 text-sm text-left hover:bg-muted transition-colors rounded-t-lg ${
+                    selectedMonth === 'latest' ? 'text-primary' : 'text-foreground'
                   }`}
                 >
                   Latest
@@ -214,15 +214,15 @@ export function PLPerformance() {
                       disabled={!isAvailable}
                       className={`w-full px-4 py-2 text-sm text-left transition-colors last:rounded-b-lg flex items-center justify-between ${
                         !isAvailable 
-                          ? 'text-slate-600 cursor-not-allowed' 
+                          ? 'text-muted-foreground/50 cursor-not-allowed' 
                           : selectedMonth === monthNum 
-                            ? 'text-[#D4A574] hover:bg-[#374151]' 
-                            : 'text-white hover:bg-[#374151]'
+                            ? 'text-primary hover:bg-muted' 
+                            : 'text-foreground hover:bg-muted'
                       }`}
                     >
                       <span>{name}</span>
                       {isAvailable && !hasActual && (
-                        <span className="text-xs text-slate-500">Budget</span>
+                        <span className="text-xs text-muted-foreground">Budget</span>
                       )}
                     </button>
                   );
@@ -235,10 +235,10 @@ export function PLPerformance() {
 
       {/* No data state - check for either actual OR budget data */}
       {!plData?.hasData && !budgetData?.hasData ? (
-        <div className="rounded-xl border border-dashed border-[#374151] bg-[#1a1f2e]/50 p-8 md:p-12 text-center">
-          <Calendar className="h-10 w-10 md:h-12 md:w-12 text-slate-500 mx-auto mb-4" />
-          <p className="text-slate-400 text-base md:text-lg">No P&L data available for {selectedYear}</p>
-          <p className="text-sm text-slate-500 mt-2">
+        <div className="rounded-xl border border-dashed border-border bg-card/50 p-8 md:p-12 text-center">
+          <Calendar className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-base md:text-lg">No P&L data available for {selectedYear}</p>
+          <p className="text-sm text-muted-foreground mt-2">
             Sync your P&L sheet from the Admin → Data Sync page
           </p>
         </div>
@@ -246,12 +246,12 @@ export function PLPerformance() {
         <>
           {/* Budget-only indicator */}
           {isBudgetOnly && (
-            <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-4 mb-4">
+            <div className="rounded-lg bg-warning/10 border border-warning/30 p-4 mb-4">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-amber-400" />
-                <p className="text-amber-400 font-medium">Showing Budget Data Only</p>
+                <AlertCircle className="h-5 w-5 text-warning" />
+                <p className="text-warning font-medium">Showing Budget Data Only</p>
               </div>
-              <p className="text-sm text-amber-400/70 mt-1">
+              <p className="text-sm text-warning/70 mt-1">
                 No actual data recorded yet for {selectedYear}. Displaying budget projections.
               </p>
             </div>

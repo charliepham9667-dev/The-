@@ -1,6 +1,6 @@
 import { FormEvent, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Input } from '../../components/ui';
+import { Button, Card, Input, Label } from '../../components/ui';
 import { useAuthStore } from '../../stores/authStore';
 
 export function Login() {
@@ -46,19 +46,19 @@ export function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f1419] px-4">
-      <Card className="w-full max-w-md space-y-6 bg-[#1a1f2e] border border-[#374151] p-8 rounded-lg">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-md space-y-6 p-8">
         <div className="space-y-1 text-center">
-          <h1 className="text-xl font-semibold text-white">
+          <h1 className="text-xl font-semibold text-foreground">
             {mode === 'signin' ? 'Sign in to' : 'Sign up for'} The Roof HRM
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted-foreground">
             Internal access for F&B owners and managers.
           </p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-2 rounded text-sm">
+          <div className="bg-error/10 border border-error text-error px-4 py-2 rounded text-sm">
             {error}
           </div>
         )}
@@ -66,8 +66,9 @@ export function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Full Name</label>
+              <Label htmlFor="fullName" className="text-xs">Full Name</Label>
               <Input
+                id="fullName"
                 type="text"
                 required
                 value={fullName}
@@ -78,8 +79,9 @@ export function Login() {
           )}
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Work Email</label>
+            <Label htmlFor="email" className="text-xs">Work Email</Label>
             <Input
+              id="email"
               type="email"
               required
               value={email}
@@ -89,8 +91,9 @@ export function Login() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Password</label>
+            <Label htmlFor="password" className="text-xs">Password</Label>
             <Input
+              id="password"
               type="password"
               required
               value={password}
@@ -102,20 +105,20 @@ export function Login() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#ff6b35] hover:bg-[#e55a2b] text-white py-3"
+            className="w-full py-3"
           >
             {isLoading ? 'Loading...' : mode === 'signin' ? 'Sign In' : 'Sign Up'}
           </Button>
         </form>
 
-        <p className="text-center text-sm text-slate-400">
+        <p className="text-center text-sm text-muted-foreground">
           {mode === 'signin' ? (
             <>
               Don't have an account?{' '}
               <button
                 type="button"
                 onClick={() => setMode('signup')}
-                className="text-[#ff6b35] hover:underline"
+                className="text-primary hover:underline"
               >
                 Sign Up
               </button>
@@ -126,7 +129,7 @@ export function Login() {
               <button
                 type="button"
                 onClick={() => setMode('signin')}
-                className="text-[#ff6b35] hover:underline"
+                className="text-primary hover:underline"
               >
                 Sign In
               </button>

@@ -49,12 +49,12 @@ export function Staffing() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Staffing & Team</h1>
-          <p className="text-sm text-slate-400 mt-1">Manage shifts and team schedules</p>
+          <h1 className="text-2xl font-semibold text-foreground">Staffing & Team</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage shifts and team schedules</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Shift
@@ -62,25 +62,25 @@ export function Staffing() {
       </div>
 
       {/* Week Navigation */}
-      <div className="flex items-center justify-between rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
+      <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
         <button
           onClick={() => navigateWeek('prev')}
-          className="rounded-lg p-2 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors"
+          className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
         <div className="text-center">
-          <p className="text-lg font-semibold text-white">{formatWeekRange()}</p>
+          <p className="text-lg font-semibold text-foreground">{formatWeekRange()}</p>
           <button
             onClick={() => setSelectedDate(new Date())}
-            className="text-sm text-[#ff6b35] hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             Today
           </button>
         </div>
         <button
           onClick={() => navigateWeek('next')}
-          className="rounded-lg p-2 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors"
+          className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         >
           <ChevronRight className="h-5 w-5" />
         </button>

@@ -24,6 +24,12 @@ import {
   UtensilsCrossed,
   RefreshCw,
   Settings,
+  ListTodo,
+  Clock,
+  ListChecks,
+  CalendarDays,
+  Bell,
+  ClipboardList,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuthStore } from '../../stores/authStore';
@@ -52,6 +58,7 @@ const ownerSections: NavSection[] = [
     items: [
       { to: '/', label: 'Live Snapshot', icon: Activity },
       { to: '/my-dashboard', label: 'My Dashboard', icon: Target },
+      { to: '/owner/tasks', label: 'Task Delegation', icon: ListTodo },
     ],
   },
   {
@@ -72,9 +79,22 @@ const ownerSections: NavSection[] = [
     icon: Users,
     defaultOpen: false,
     items: [
+      { to: '/manager/reservations', label: 'Reservations', icon: CalendarDays },
       { to: '/ops/workforce', label: 'Workforce Overview', icon: UsersRound },
       { to: '/ops/managers', label: 'Manager Performance', icon: UserCheck },
-      { to: '/ops/staffing', label: 'Staffing & Team', icon: Users },
+      { to: '/ops/staffing', label: 'Staffing & Schedule', icon: Calendar },
+      { to: '/manager/leave', label: 'Leave Requests', icon: Clock },
+    ],
+  },
+  {
+    title: 'Team',
+    icon: UsersRound,
+    defaultOpen: false,
+    items: [
+      { to: '/owner/team', label: 'Team Directory', icon: Users },
+      { to: '/manager/announcements', label: 'Announcements', icon: Megaphone },
+      { to: '/owner/calendar', label: 'Calendar', icon: CalendarDays },
+      { to: '/owner/resources', label: 'Resources', icon: FileText },
     ],
   },
   {
@@ -95,7 +115,7 @@ const getManagerSections = (managerType: ManagerType): NavSection[] => {
     marketing: { label: 'Marketing', icon: Megaphone },
   };
 
-  const typeInfo = managerType ? managerLabels[managerType] : { label: 'My Team', icon: Users };
+  const typeInfo = managerType ? managerLabels[managerType] : { label: 'Operations', icon: ClipboardList };
 
   return [
     {
@@ -103,8 +123,8 @@ const getManagerSections = (managerType: ManagerType): NavSection[] => {
       icon: LayoutDashboard,
       defaultOpen: true,
       items: [
-        { to: '/', label: 'Overview', icon: Activity },
-        { to: '/my-dashboard', label: 'My Dashboard', icon: Target },
+        { to: '/manager/dashboard', label: 'Overview', icon: Activity },
+        { to: '/', label: 'Live Snapshot', icon: Target },
       ],
     },
     {
@@ -112,8 +132,20 @@ const getManagerSections = (managerType: ManagerType): NavSection[] => {
       icon: typeInfo.icon,
       defaultOpen: true,
       items: [
+        { to: '/manager/reservations', label: 'Reservations', icon: CalendarDays },
         { to: '/ops/staffing', label: 'Team Schedule', icon: Calendar },
         { to: '/ops/workforce', label: 'Team Status', icon: UsersRound },
+        { to: '/manager/leave', label: 'Leave Requests', icon: Clock },
+      ],
+    },
+    {
+      title: 'Communication',
+      icon: Megaphone,
+      defaultOpen: false,
+      items: [
+        { to: '/manager/announcements', label: 'Announcements', icon: Bell },
+        { to: '/announcements', label: 'Feed', icon: MessageSquare },
+        { to: '/resources', label: 'Resources', icon: FileText },
       ],
     },
   ];
@@ -123,11 +155,46 @@ const getManagerSections = (managerType: ManagerType): NavSection[] => {
 const staffItems: NavItem[] = [
   { to: '/', label: 'My Dashboard', icon: Activity },
   { to: '/my-shifts', label: 'My Shifts', icon: Calendar },
+  { to: '/tasks', label: 'Checklists', icon: ListChecks },
+  { to: '/leave', label: 'Leave Request', icon: Clock },
+  { to: '/announcements', label: 'Announcements', icon: Megaphone },
+  { to: '/resources', label: 'Resources', icon: FileText },
   { to: '/profile', label: 'My Profile', icon: User },
+];
+
+// Investor sees read-only: finance, workforce, tasks, chat
+const investorSections: NavSection[] = [
+  {
+    title: 'Overview',
+    icon: LayoutDashboard,
+    defaultOpen: true,
+    items: [
+      { to: '/', label: 'Investor Dashboard', icon: Activity },
+    ],
+  },
+  {
+    title: 'Finance',
+    icon: DollarSign,
+    defaultOpen: false,
+    items: [
+      { to: '/finance/pl', label: 'P&L Performance', icon: FileText },
+      { to: '/finance/reports', label: 'Report Builder', icon: PieChart },
+    ],
+  },
+  {
+    title: 'Operations',
+    icon: Users,
+    defaultOpen: false,
+    items: [
+      { to: '/ops/workforce', label: 'Workforce Overview', icon: UsersRound },
+      { to: '/owner/tasks', label: 'Task Delegation', icon: ListTodo },
+    ],
+  },
 ];
 
 function getRoleBadge(role: UserRole, managerType?: ManagerType | null): string {
   if (role === 'owner') return 'Owner';
+  if (role === 'investor') return 'Investor';
   if (role === 'manager') {
     const labels: Record<string, string> = {
       bar: 'Bar Manager',
@@ -147,7 +214,7 @@ function CollapsibleSection({ section }: { section: NavSection }) {
     <div className="mb-1">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-slate-400 hover:bg-[#1a1f2e] hover:text-white transition-colors"
+        className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
       >
         <div className="flex items-center gap-2">
           <Icon className="h-4 w-4" />
@@ -160,7 +227,7 @@ function CollapsibleSection({ section }: { section: NavSection }) {
         )}
       </button>
       {isOpen && (
-        <div className="ml-2 mt-1 space-y-1 border-l border-[#374151] pl-2">
+        <div className="ml-2 mt-1 space-y-1 border-l border-border pl-2">
           {section.items.map((item) => {
             const ItemIcon = item.icon;
             return (
@@ -169,8 +236,8 @@ function CollapsibleSection({ section }: { section: NavSection }) {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-400 hover:bg-[#1a1f2e] hover:text-white transition-colors',
-                    isActive && 'bg-[#1a1f2e] text-[#ff6b35] border-l-2 border-[#ff6b35] -ml-[2px]'
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors',
+                    isActive && 'bg-muted text-primary border-l-2 border-primary -ml-[2px]'
                   )
                 }
               >
@@ -185,15 +252,15 @@ function CollapsibleSection({ section }: { section: NavSection }) {
   );
 }
 
-function NavItem({ item }: { item: NavItem }) {
+function NavItemComponent({ item }: { item: NavItem }) {
   const Icon = item.icon;
   return (
     <NavLink
       to={item.to}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-400 hover:bg-[#1a1f2e] hover:text-white transition-colors',
-          isActive && 'bg-[#1a1f2e] text-[#ff6b35]'
+          'flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors',
+          isActive && 'bg-muted text-primary'
         )
       }
     >
@@ -210,15 +277,23 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const profile = useAuthStore((s) => s.profile);
-  const role = profile?.role || 'staff';
-  const managerType = profile?.managerType;
+  const viewAs = useAuthStore((s) => s.viewAs);
+  
+  // Use viewAs if set, otherwise use actual profile
+  const effectiveRole = viewAs?.role || profile?.role || 'staff';
+  const effectiveManagerType = viewAs?.managerType ?? profile?.managerType;
+  
+  const role = effectiveRole;
+  const managerType = effectiveManagerType;
 
   // Get sections based on role
   const sections = role === 'owner' 
     ? ownerSections 
     : role === 'manager' 
       ? getManagerSections(managerType || null)
-      : [];
+      : role === 'investor'
+        ? investorSections
+        : [];
 
   const roleBadge = getRoleBadge(role, managerType);
 
@@ -234,23 +309,23 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       
       {/* Sidebar - hidden on mobile unless open, always visible on lg+ */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 flex h-full w-64 flex-col bg-[#0d1117] border-r border-[#374151] transition-transform duration-300 lg:static lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 flex h-full w-64 flex-col bg-card border-r border-border transition-transform duration-300 lg:static lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-[#374151]">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ff6b35]">
-          <LayoutDashboard className="h-5 w-5 text-white" />
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-border">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+          <LayoutDashboard className="h-5 w-5 text-primary-foreground" />
         </div>
         <div>
-          <div className="font-semibold text-white">The Roof</div>
-          <div className="text-xs text-slate-500">Restaurant Management Hub</div>
+          <div className="font-semibold text-foreground">The Roof</div>
+          <div className="text-xs text-muted-foreground">Restaurant Management Hub</div>
         </div>
       </div>
 
       {/* Role Badge */}
       <div className="px-3 py-4">
-        <div className="flex w-full items-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-3 text-sm font-medium text-white">
+        <div className="flex w-full items-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground">
           <LayoutDashboard className="h-4 w-4" />
           {roleBadge} Dashboard
         </div>
@@ -262,7 +337,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           // Staff gets flat list
           <div className="space-y-1">
             {staffItems.map((item) => (
-              <NavItem key={item.to} item={item} />
+              <NavItemComponent key={item.to} item={item} />
             ))}
           </div>
         ) : (
@@ -274,13 +349,13 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       </nav>
 
       {/* Chat Section - Everyone */}
-      <div className="px-3 py-4 border-t border-[#374151]">
+      <div className="px-3 py-4 border-t border-border">
         <NavLink
           to="/chat"
           className={({ isActive }) =>
             cn(
-              'flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-400 hover:bg-[#1a1f2e] hover:text-white transition-colors',
-              isActive && 'bg-[#1a1f2e] text-white'
+              'flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors',
+              isActive && 'bg-muted text-foreground'
             )
           }
         >
@@ -291,14 +366,14 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
       {/* User Info */}
       {profile && (
-        <div className="px-3 py-4 border-t border-[#374151]">
+        <div className="px-3 py-4 border-t border-border">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-slate-600 flex items-center justify-center text-xs font-medium text-white">
+            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground">
               {profile.fullName?.split(' ').map(n => n[0]).join('') || '?'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{profile.fullName}</p>
-              <p className="text-xs text-slate-500 truncate">{profile.email}</p>
+              <p className="text-sm font-medium text-foreground truncate">{profile.fullName}</p>
+              <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
             </div>
           </div>
         </div>

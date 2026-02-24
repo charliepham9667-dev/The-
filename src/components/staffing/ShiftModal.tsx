@@ -107,15 +107,15 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-[#374151] bg-[#1a1f2e] shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#374151] p-3 md:p-4">
-          <h2 className="text-base md:text-lg font-semibold text-white">
+        <div className="flex items-center justify-between border-b border-border p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold text-foreground">
             {isEditing ? 'Edit Shift' : 'Add New Shift'}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 hover:bg-[#374151] hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1"
+            className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1"
           >
             <X className="h-5 w-5" />
           </button>
@@ -124,25 +124,25 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
         {/* Content */}
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-3 md:p-4 space-y-3 md:space-y-4">
             {error && (
-              <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-xs md:text-sm text-red-400">
+              <div className="rounded-lg bg-error/10 border border-error/30 p-3 text-xs md:text-sm text-error">
                 {error}
               </div>
             )}
 
             {/* Staff Member */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
                 Staff Member *
               </label>
               <select
                 value={formData.staffId}
                 onChange={(e) => setFormData({ ...formData, staffId: e.target.value })}
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 md:py-2 text-sm text-foreground focus:border-ring focus:outline-none min-h-[44px] md:min-h-0"
               >
                 <option value="">Select staff...</option>
                 {(staffList || []).map((staff) => (
@@ -155,52 +155,52 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
 
             {/* Date */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
                 Shift Date *
               </label>
               <input
                 type="date"
                 value={formData.shiftDate}
                 onChange={(e) => setFormData({ ...formData, shiftDate: e.target.value })}
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 md:py-2 text-sm text-foreground focus:border-ring focus:outline-none min-h-[44px] md:min-h-0"
               />
             </div>
 
             {/* Time */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
+                <label className="block text-xs font-medium text-muted-foreground mb-1">
                   Start Time *
                 </label>
                 <input
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                  className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 md:py-2 text-sm text-foreground focus:border-ring focus:outline-none min-h-[44px] md:min-h-0"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
+                <label className="block text-xs font-medium text-muted-foreground mb-1">
                   End Time *
                 </label>
                 <input
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                  className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 md:py-2 text-sm text-foreground focus:border-ring focus:outline-none min-h-[44px] md:min-h-0"
                 />
               </div>
             </div>
 
             {/* Role */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
                 Role *
               </label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white focus:border-[#ff6b35] focus:outline-none min-h-[44px] md:min-h-0"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 md:py-2 text-sm text-foreground focus:border-ring focus:outline-none min-h-[44px] md:min-h-0"
               >
                 {ROLES.map((role) => (
                   <option key={role} value={role}>
@@ -212,7 +212,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
 
             {/* Notes */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
                 Notes
               </label>
               <textarea
@@ -220,28 +220,28 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={2}
                 placeholder="Any special instructions..."
-                className="w-full rounded-lg border border-[#374151] bg-[#0f1419] px-3 py-2.5 md:py-2 text-sm text-white placeholder-slate-500 focus:border-[#ff6b35] focus:outline-none resize-none"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 md:py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none resize-none"
               />
             </div>
 
             {/* Clock In/Out (only for existing shifts) */}
             {isEditing && existingShift && (
-              <div className="rounded-lg border border-[#374151] bg-[#0f1419] p-3">
-                <p className="text-xs text-slate-400 mb-2">Time Tracking</p>
+              <div className="rounded-lg border border-border bg-background p-3">
+                <p className="text-xs text-muted-foreground mb-2">Time Tracking</p>
                 <div className="flex flex-wrap items-center gap-2">
                   {!existingShift.clockIn ? (
                     <button
                       type="button"
                       onClick={handleClockIn}
                       disabled={clockInOut.isPending}
-                      className="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 md:py-1.5 text-xs font-medium text-white hover:bg-emerald-700 transition-colors disabled:opacity-50 min-h-[40px] md:min-h-0"
+                      className="flex items-center gap-1 rounded-lg bg-success px-3 py-2 md:py-1.5 text-xs font-medium text-white hover:bg-success/90 transition-colors disabled:opacity-50 min-h-[40px] md:min-h-0"
                     >
                       <Play className="h-3 w-3" />
                       Clock In
                     </button>
                   ) : !existingShift.clockOut ? (
                     <>
-                      <span className="flex items-center gap-1 text-xs text-emerald-400">
+                      <span className="flex items-center gap-1 text-xs text-success">
                         <Clock className="h-3 w-3" />
                         Clocked in at {new Date(existingShift.clockIn).toLocaleTimeString()}
                       </span>
@@ -249,14 +249,14 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                         type="button"
                         onClick={handleClockOut}
                         disabled={clockInOut.isPending}
-                        className="flex items-center gap-1 rounded-lg bg-red-600 px-3 py-2 md:py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50 min-h-[40px] md:min-h-0"
+                        className="flex items-center gap-1 rounded-lg bg-error px-3 py-2 md:py-1.5 text-xs font-medium text-white hover:bg-error/90 transition-colors disabled:opacity-50 min-h-[40px] md:min-h-0"
                       >
                         <Square className="h-3 w-3" />
                         Clock Out
                       </button>
                     </>
                   ) : (
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-muted-foreground">
                       Completed: {new Date(existingShift.clockIn).toLocaleTimeString()} - {new Date(existingShift.clockOut).toLocaleTimeString()}
                     </span>
                   )}
@@ -271,7 +271,7 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteShift.isPending}
-                  className="flex items-center justify-center gap-1 rounded-lg px-3 py-2.5 md:py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50 min-h-[44px] md:min-h-0"
+                  className="flex items-center justify-center gap-1 rounded-lg px-3 py-2.5 md:py-2 text-sm text-error hover:bg-error/10 transition-colors disabled:opacity-50 min-h-[44px] md:min-h-0"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete
@@ -281,14 +281,14 @@ export function ShiftModal({ shiftId, defaultDate, onClose }: ShiftModalProps) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg border border-[#374151] px-4 py-2.5 md:py-2 text-sm text-slate-400 hover:bg-[#374151] hover:text-white transition-colors min-h-[44px] md:min-h-0 w-full sm:w-auto"
+                  className="rounded-lg border border-border px-4 py-2.5 md:py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors min-h-[44px] md:min-h-0 w-full sm:w-auto"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-[#ff6b35] px-4 py-2.5 md:py-2 text-sm font-medium text-white hover:bg-[#e55a2b] transition-colors disabled:opacity-50 min-h-[44px] md:min-h-0 w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 md:py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 min-h-[44px] md:min-h-0 w-full sm:w-auto"
                 >
                   {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isEditing ? 'Save Changes' : 'Create Shift'}

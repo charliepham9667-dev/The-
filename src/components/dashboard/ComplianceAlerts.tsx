@@ -1,5 +1,5 @@
 import { AlertCircle, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
-import { useCompliance } from '../../hooks/useDashboardData';
+import type { ComplianceItem } from '../../hooks/useDashboardData';
 
 type AlertStatus = 'action_required' | 'needs_attention' | 'passed' | 'pending';
 
@@ -22,61 +22,64 @@ const statusConfig: Record<AlertStatus, {
 }> = {
   action_required: {
     icon: AlertCircle,
-    bgColor: 'bg-red-500/20',
-    borderColor: 'border-red-500/30',
-    textColor: 'text-red-400',
-    badgeBg: 'bg-red-500',
+    bgColor: 'bg-error/20',
+    borderColor: 'border-error/30',
+    textColor: 'text-error',
+    badgeBg: 'bg-error',
     badgeText: 'Action Required',
   },
   needs_attention: {
     icon: AlertTriangle,
-    bgColor: 'bg-yellow-500/20',
-    borderColor: 'border-yellow-500/30',
-    textColor: 'text-yellow-400',
-    badgeBg: 'bg-yellow-500',
+    bgColor: 'bg-warning/20',
+    borderColor: 'border-warning/30',
+    textColor: 'text-warning',
+    badgeBg: 'bg-warning',
     badgeText: 'Needs Attention',
   },
   passed: {
     icon: CheckCircle,
-    bgColor: 'bg-emerald-500/20',
-    borderColor: 'border-emerald-500/30',
-    textColor: 'text-emerald-400',
-    badgeBg: 'bg-emerald-500',
+    bgColor: 'bg-success/20',
+    borderColor: 'border-success/30',
+    textColor: 'text-success',
+    badgeBg: 'bg-success',
     badgeText: 'Passed',
   },
   pending: {
     icon: AlertTriangle,
-    bgColor: 'bg-slate-500/20',
-    borderColor: 'border-slate-500/30',
-    textColor: 'text-slate-400',
-    badgeBg: 'bg-slate-500',
+    bgColor: 'bg-muted/50',
+    borderColor: 'border-muted',
+    textColor: 'text-muted-foreground',
+    badgeBg: 'bg-muted-foreground',
     badgeText: 'Pending',
   },
 };
 
-export function ComplianceAlerts() {
-  const { data: complianceItems, isLoading, error } = useCompliance();
+interface ComplianceAlertsProps {
+  data?: ComplianceItem[];
+  isLoading?: boolean;
+}
 
+export function ComplianceAlerts({ data: complianceItems, isLoading }: ComplianceAlertsProps) {
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      <div className="rounded-xl border border-border bg-card p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  if (error) {
+  if (!complianceItems) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex items-center justify-center">
-        <p className="text-slate-400">Failed to load compliance data</p>
+      <div className="rounded-xl border border-border bg-card p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex items-center justify-center">
+        <p className="text-muted-foreground">Failed to load compliance data</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex flex-col">
+    <div className="rounded-xl border border-border bg-card p-4 md:p-6 min-h-[200px] md:min-h-[256px] w-full flex flex-col">
       {/* Header */}
-      <h3 className="text-base md:text-lg font-semibold text-white mb-3 md:mb-4">Compliance Alerts</h3>
+      <h3 className="text-base md:text-lg font-semibold text-foreground mb-3 md:mb-4">Compliance Alerts</h3>
 
       {/* Alerts List */}
       <div className="flex-1 space-y-3 overflow-y-auto">
@@ -93,14 +96,14 @@ export function ComplianceAlerts() {
               <Icon className={`h-5 w-5 mt-0.5 ${config.textColor}`} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm font-medium text-white truncate">{item.title}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
                   {daysRemaining !== null && daysRemaining > 0 && (
-                    <span className="rounded-full bg-red-500/30 px-2 py-0.5 text-[10px] font-medium text-red-400">
+                    <span className="rounded-full bg-error/30 px-2 py-0.5 text-[10px] font-medium text-error">
                       {daysRemaining} days
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 mb-2">{item.description}</p>
+                <p className="text-xs text-muted-foreground mb-2">{item.description}</p>
                 <span
                   className={`inline-block rounded px-2 py-0.5 text-[10px] font-medium text-white ${config.badgeBg}`}
                 >

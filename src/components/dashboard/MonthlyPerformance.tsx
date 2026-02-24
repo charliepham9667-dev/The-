@@ -9,23 +9,34 @@ import {
   ReferenceLine,
   Cell,
 } from 'recharts';
-import { useMonthlyPerformance } from '../../hooks/useDashboardData';
+import type { MonthlyPerformanceData } from '../../hooks/useDashboardData';
 
-export function MonthlyPerformance() {
-  const { data: monthlyData, isLoading, error } = useMonthlyPerformance();
+// Chart colors - using brand colors for consistency
+const CHART_COLORS = {
+  onTarget: '#22c55e', // success green
+  behindTarget: '#C74C3C', // brand terracotta
+  referenceLine: '#6b7280', // muted gray
+};
+
+interface MonthlyPerformanceProps {
+  data?: MonthlyPerformanceData[];
+  isLoading?: boolean;
+}
+
+export function MonthlyPerformance({ data: monthlyData, isLoading }: MonthlyPerformanceProps) {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      <div className="rounded-xl border border-border bg-card p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  if (error || !monthlyData || monthlyData.length === 0) {
+  if (!isLoading && (!monthlyData || monthlyData.length === 0)) {
     return (
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex items-center justify-center">
-        <p className="text-slate-400">No monthly data available</p>
+      <div className="rounded-xl border border-border bg-card p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex items-center justify-center">
+        <p className="text-muted-foreground">No monthly data available</p>
       </div>
     );
   }
@@ -48,19 +59,19 @@ export function MonthlyPerformance() {
   const maxValue = Math.max(...chartData.map(d => Math.max(d.value, d.target))) * 1.1;
 
   return (
-    <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex flex-col">
+    <div className="rounded-xl border border-border bg-card p-4 md:p-6 min-h-[280px] md:min-h-[380px] w-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-base md:text-lg font-semibold text-white">Monthly Performance</h3>
-        <span className={`flex items-center gap-1 text-sm font-medium ${isOnTarget ? 'text-emerald-400' : 'text-red-400'}`}>
+        <h3 className="text-base md:text-lg font-semibold text-foreground">Monthly Performance</h3>
+        <span className={`flex items-center gap-1 text-sm font-medium ${isOnTarget ? 'text-success' : 'text-error'}`}>
           {isOnTarget ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
           {currentMonth.achievementPercent}%
         </span>
       </div>
 
       {/* Target info */}
-      <p className="text-sm text-slate-400 mb-4">
-        {currentMonth.month} Achievement: <span className="text-white font-medium">{achieved}M đ</span> / {target}M đ
+      <p className="text-sm text-muted-foreground mb-4">
+        {currentMonth.month} Achievement: <span className="text-foreground font-medium">{achieved}M đ</span> / {target}M đ
       </p>
 
       {/* Chart */}
@@ -69,8 +80,8 @@ export function MonthlyPerformance() {
           <BarChart data={chartData} layout="vertical">
             <XAxis
               type="number"
-              stroke="#9ca3af"
-              tick={{ fill: '#9ca3af', fontSize: 10 }}
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
               axisLine={false}
               tickLine={false}
               domain={[0, maxValue]}
@@ -79,19 +90,20 @@ export function MonthlyPerformance() {
             <YAxis
               type="category"
               dataKey="month"
-              stroke="#9ca3af"
-              tick={{ fill: '#9ca3af', fontSize: 12 }}
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
               axisLine={false}
               tickLine={false}
               width={35}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#1a1f2e',
-                border: '1px solid #374151',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
+                color: 'hsl(var(--foreground))',
               }}
-              labelStyle={{ color: '#fff' }}
+              labelStyle={{ color: 'hsl(var(--foreground))' }}
               formatter={(value: number, name: string, props: any) => [
                 `${value}M đ (Target: ${props.payload.target}M đ)`,
                 'Revenue'
@@ -99,7 +111,7 @@ export function MonthlyPerformance() {
             />
             <ReferenceLine
               x={target}
-              stroke="#6b7280"
+              stroke={CHART_COLORS.referenceLine}
               strokeDasharray="3 3"
             />
             <Bar
@@ -110,7 +122,7 @@ export function MonthlyPerformance() {
               {chartData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
-                  fill={entry.onTarget ? '#22c55e' : '#ff6b35'} 
+                  fill={entry.onTarget ? CHART_COLORS.onTarget : CHART_COLORS.behindTarget} 
                 />
               ))}
             </Bar>

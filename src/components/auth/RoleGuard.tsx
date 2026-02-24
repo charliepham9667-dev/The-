@@ -11,6 +11,7 @@ interface RoleGuardProps {
 /**
  * Protects routes based on user role.
  * Redirects to fallbackPath if user doesn't have required role.
+ * Note: Owners always have access regardless of viewAs mode (viewAs is UI-only).
  */
 export function RoleGuard({ 
   children, 
@@ -18,15 +19,30 @@ export function RoleGuard({
   fallbackPath = '/' 
 }: RoleGuardProps) {
   const profile = useAuthStore((s) => s.profile);
-  const hasRole = useAuthStore((s) => s.hasRole);
+  const initialized = useAuthStore((s) => s.initialized);
 
-  // If profile not loaded yet, show nothing (parent ProtectedRoute handles auth)
+  // If profile not loaded yet and auth is initialized, fetchProfile likely failed — redirect to login
+  if (!profile && initialized) {
+    return <Navigate to="/login" replace />;
+  }
+  // Still loading (initialized false) — show nothing; ProtectedRoute shows loading
   if (!profile) {
     return null;
   }
 
-  // Check if user has one of the allowed roles
-  if (!hasRole(allowedRoles)) {
+  // Owners always have full access (viewAs is just for UI preview)
+  const actualRole = profile.role;
+  if (actualRole === 'owner') {
+    return <>{children}</>;
+  }
+
+  // Investors have read-only access to owner routes (treated as owner for route access)
+  if (actualRole === 'investor' && allowedRoles.includes('owner')) {
+    return <>{children}</>;
+  }
+
+  // For non-owners, check against allowed roles
+  if (!allowedRoles.includes(actualRole)) {
     return <Navigate to={fallbackPath} replace />;
   }
 

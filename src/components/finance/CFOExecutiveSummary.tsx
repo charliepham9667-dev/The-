@@ -942,30 +942,30 @@ export function CFOExecutiveSummary({
   const monthName = getMonthName(currentMonth.month);
   
   const healthColors: Record<HealthStatus, { bg: string; text: string; border: string }> = {
-    'Excellent': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-    'Good': { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
-    'Average': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
-    'At Risk': { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
+    'Excellent': { bg: 'bg-success/20', text: 'text-success', border: 'border-success/30' },
+    'Good': { bg: 'bg-success/20', text: 'text-success', border: 'border-success/30' },
+    'Average': { bg: 'bg-warning/20', text: 'text-warning', border: 'border-warning/30' },
+    'At Risk': { bg: 'bg-error/20', text: 'text-error', border: 'border-error/30' },
   };
 
   const categoryColors = {
     'margin': 'text-purple-400',
-    'cost': 'text-amber-400',
-    'revenue': 'text-emerald-400'
+    'cost': 'text-warning',
+    'revenue': 'text-success'
   };
 
   return (
-    <div className="rounded-xl border border-[#2a3441] bg-[#1a1f2e] overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
       {/* Header */}
-      <div className="border-b border-[#2a3441] px-6 py-4 bg-gradient-to-r from-[#1a1f2e] to-[#252d3d]">
+      <div className="border-b border-border px-6 py-4 bg-gradient-to-r from-card to-muted/50">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Confidential Internal Memorandum</p>
-            <h2 className="text-xl font-serif text-white">CFO Executive Summary</h2>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Confidential Internal Memorandum</p>
+            <h2 className="text-xl font-serif text-foreground">CFO Executive Summary</h2>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-500 uppercase tracking-wider">{monthName} {year} Edition</p>
-            <p className="text-xs text-slate-500">Published {new Date().toLocaleDateString()}</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">{monthName} {year} Edition</p>
+            <p className="text-xs text-muted-foreground">Published {new Date().toLocaleDateString()}</p>
           </div>
         </div>
       </div>
@@ -974,11 +974,11 @@ export function CFOExecutiveSummary({
         {/* Row 1: BHI + Executive Summary + Strategic Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* BHI Score Card */}
-          <div className="lg:col-span-3 rounded-xl border border-[#2a3441] bg-[#151922] p-5">
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-4">Business Health Index</p>
+          <div className="lg:col-span-3 rounded-xl border border-border bg-background p-5">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-4">Business Health Index</p>
             <div className="flex items-baseline gap-1 mb-2">
               <span className={`text-5xl font-bold ${healthColors[bhi.rating].text}`}>{bhi.score}</span>
-              <span className="text-slate-500 text-xl">/ 100</span>
+              <span className="text-muted-foreground text-xl">/ 100</span>
             </div>
             <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${healthColors[bhi.rating].bg} ${healthColors[bhi.rating].text} mb-5`}>
               <CheckCircle className="h-3 w-3" />
@@ -986,7 +986,7 @@ export function CFOExecutiveSummary({
             </div>
             
             {/* Pillar Breakdown */}
-            <div className="space-y-3 border-t border-[#2a3441] pt-4">
+            <div className="space-y-3 border-t border-border pt-4">
               {[
                 { label: 'Profitability (40%)', value: bhi.pillarScores.profitability },
                 { label: 'Growth (25%)', value: bhi.pillarScores.growth },
@@ -995,12 +995,12 @@ export function CFOExecutiveSummary({
               ].map((pillar, idx) => (
                 <div key={idx}>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-slate-500 uppercase tracking-wide text-[10px]">{pillar.label}</span>
-                    <span className="text-slate-300 font-semibold">{pillar.value}</span>
+                    <span className="text-muted-foreground uppercase tracking-wide text-[10px]">{pillar.label}</span>
+                    <span className="text-foreground font-semibold">{pillar.value}</span>
                   </div>
-                  <div className="h-1 bg-[#2a3441] rounded-full overflow-hidden">
+                  <div className="h-1 bg-border rounded-full overflow-hidden">
                     <div 
-                      className={`h-full rounded-full transition-all ${pillar.value >= 70 ? 'bg-emerald-500' : pillar.value >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                      className={`h-full rounded-full transition-all ${pillar.value >= 70 ? 'bg-success' : pillar.value >= 40 ? 'bg-warning' : 'bg-error'}`}
                       style={{ width: `${pillar.value}%` }}
                     />
                   </div>
@@ -1010,52 +1010,52 @@ export function CFOExecutiveSummary({
           </div>
 
           {/* Executive Summary */}
-          <div className="lg:col-span-5 rounded-xl border border-[#2a3441] bg-[#151922] p-5">
+          <div className="lg:col-span-5 rounded-xl border border-border bg-background p-5">
             <div className="flex items-center gap-2 mb-4">
-              <BarChart3 className="h-4 w-4 text-slate-400" />
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest">1. Executive Summary</p>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">1. Executive Summary</p>
             </div>
-            <p className="text-sm text-slate-300 leading-relaxed mb-5">
+            <p className="text-sm text-foreground leading-relaxed mb-5">
               {bhi.executiveSummary}
             </p>
             
             {/* Sub-sections */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#2a3441]">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
               <div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-2">The Numbers</p>
-                <p className="text-xs text-slate-400 leading-relaxed">{cfoCommentary.beneathSurface}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2">The Numbers</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{cfoCommentary.beneathSurface}</p>
               </div>
               <div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-2">Sustainability</p>
-                <p className="text-xs text-slate-400 leading-relaxed">{cfoCommentary.sustainability}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2">Sustainability</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{cfoCommentary.sustainability}</p>
               </div>
             </div>
           </div>
 
           {/* Strategic Actions */}
-          <div className="lg:col-span-4 rounded-xl border border-[#2a3441] bg-[#151922] p-5">
+          <div className="lg:col-span-4 rounded-xl border border-border bg-background p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="h-4 w-4 text-amber-400" />
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest">Strategic Actions</p>
+              <Lightbulb className="h-4 w-4 text-warning" />
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Strategic Actions</p>
             </div>
             
             <div className="space-y-3">
               {/* Cost Action */}
-              <div className="rounded-lg bg-[#1a1f2e] border-l-2 border-amber-500 p-3">
-                <p className="text-[10px] text-amber-400 uppercase tracking-widest mb-1">Cost Action</p>
-                <p className="text-xs text-slate-300 leading-relaxed">{bhi.actions.cost}</p>
+              <div className="rounded-lg bg-card border-l-2 border-warning p-3">
+                <p className="text-[10px] text-warning uppercase tracking-widest mb-1">Cost Action</p>
+                <p className="text-xs text-foreground leading-relaxed">{bhi.actions.cost}</p>
               </div>
               
               {/* Revenue Action */}
-              <div className="rounded-lg bg-[#1a1f2e] border-l-2 border-emerald-500 p-3">
-                <p className="text-[10px] text-emerald-400 uppercase tracking-widest mb-1">Revenue Action</p>
-                <p className="text-xs text-slate-300 leading-relaxed">{bhi.actions.revenue}</p>
+              <div className="rounded-lg bg-card border-l-2 border-success p-3">
+                <p className="text-[10px] text-success uppercase tracking-widest mb-1">Revenue Action</p>
+                <p className="text-xs text-foreground leading-relaxed">{bhi.actions.revenue}</p>
               </div>
               
               {/* Constraints */}
               {drivers.risks.length > 0 && (
-                <div className="rounded-lg bg-[#1a1f2e] border-l-2 border-red-500 p-3">
-                  <p className="text-[10px] text-red-400 uppercase tracking-widest mb-2">Constraints</p>
+                <div className="rounded-lg bg-card border-l-2 border-error p-3">
+                  <p className="text-[10px] text-error uppercase tracking-widest mb-2">Constraints</p>
                   <div className="space-y-1.5">
                     {drivers.risks.slice(0, 2).map((risk, i) => {
                       const getActionForRisk = (title: string): string => {
@@ -1072,8 +1072,8 @@ export function CFOExecutiveSummary({
                       };
                       return (
                         <div key={i}>
-                          <p className="text-xs text-red-400 font-medium">{risk.title}</p>
-                          <p className="text-[10px] text-slate-500">{getActionForRisk(risk.title)}</p>
+                          <p className="text-xs text-error font-medium">{risk.title}</p>
+                          <p className="text-[10px] text-muted-foreground">{getActionForRisk(risk.title)}</p>
                         </div>
                       );
                     })}

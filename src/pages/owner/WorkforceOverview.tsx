@@ -1,9 +1,9 @@
 import { Users, UserCheck, UserX, Clock, TrendingUp, Calendar } from 'lucide-react';
 
 const stats = [
-  { label: 'Total Staff', value: '24', icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/20' },
-  { label: 'Active Today', value: '16', icon: UserCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  { label: 'On Leave', value: '2', icon: UserX, color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
+  { label: 'Total Staff', value: '24', icon: Users, color: 'text-info', bg: 'bg-info/20' },
+  { label: 'Active Today', value: '16', icon: UserCheck, color: 'text-success', bg: 'bg-success/20' },
+  { label: 'On Leave', value: '2', icon: UserX, color: 'text-warning', bg: 'bg-warning/20' },
   { label: 'Avg Hours/Week', value: '38', icon: Clock, color: 'text-purple-400', bg: 'bg-purple-500/20' },
 ];
 
@@ -26,8 +26,8 @@ export function WorkforceOverview() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">Workforce Overview</h1>
-        <p className="text-sm text-slate-400 mt-1">Real-time team status and performance</p>
+        <h1 className="text-2xl font-semibold text-foreground">Workforce Overview</h1>
+        <p className="text-sm text-muted-foreground mt-1">Real-time team status and performance</p>
       </div>
 
       {/* Stats Grid */}
@@ -35,14 +35,14 @@ export function WorkforceOverview() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
+            <div key={stat.label} className="rounded-xl border border-border bg-card p-4">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-2 ${stat.bg}`}>
                   <Icon className={`h-5 w-5 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">{stat.label}</p>
-                  <p className="text-xl font-bold text-white">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  <p className="text-xl font-bold text-foreground">{stat.value}</p>
                 </div>
               </div>
             </div>
@@ -52,27 +52,27 @@ export function WorkforceOverview() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Departments */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Department Status</h2>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Department Status</h2>
           <div className="space-y-4">
             {departments.map((dept) => (
               <div key={dept.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-20">
-                    <p className="text-sm font-medium text-white">{dept.name}</p>
-                    <p className="text-xs text-slate-400">{dept.onDuty}/{dept.headcount} on duty</p>
+                    <p className="text-sm font-medium text-foreground">{dept.name}</p>
+                    <p className="text-xs text-muted-foreground">{dept.onDuty}/{dept.headcount} on duty</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-32">
-                    <div className="h-2 rounded-full bg-[#374151]">
+                    <div className="h-2 rounded-full bg-border">
                       <div
-                        className="h-2 rounded-full bg-emerald-500"
+                        className="h-2 rounded-full bg-success"
                         style={{ width: `${(dept.onDuty / dept.headcount) * 100}%` }}
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-emerald-400">
+                  <div className="flex items-center gap-1 text-success">
                     <TrendingUp className="h-3 w-3" />
                     <span className="text-xs font-medium">{dept.efficiency}%</span>
                   </div>
@@ -83,16 +83,16 @@ export function WorkforceOverview() {
         </div>
 
         {/* Recent Activity */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Recent Activity</h2>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h2>
           <div className="space-y-3">
             {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-center justify-between py-2 border-b border-[#374151] last:border-0">
+              <div key={activity.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                 <div>
-                  <p className="text-sm font-medium text-white">{activity.staff}</p>
-                  <p className="text-xs text-slate-400">{activity.role} • {activity.action}</p>
+                  <p className="text-sm font-medium text-foreground">{activity.staff}</p>
+                  <p className="text-xs text-muted-foreground">{activity.role} • {activity.action}</p>
                 </div>
-                <span className="text-xs text-slate-500">{activity.time}</span>
+                <span className="text-xs text-muted-foreground">{activity.time}</span>
               </div>
             ))}
           </div>
@@ -100,18 +100,18 @@ export function WorkforceOverview() {
       </div>
 
       {/* Quick Actions */}
-      <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <button className="flex items-center gap-2 rounded-lg border border-[#374151] px-4 py-2 text-sm text-slate-300 hover:bg-[#374151] transition-colors">
+          <button className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
             <Calendar className="h-4 w-4" />
             View Full Schedule
           </button>
-          <button className="flex items-center gap-2 rounded-lg border border-[#374151] px-4 py-2 text-sm text-slate-300 hover:bg-[#374151] transition-colors">
+          <button className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
             <Users className="h-4 w-4" />
             Manage Staff
           </button>
-          <button className="flex items-center gap-2 rounded-lg border border-[#374151] px-4 py-2 text-sm text-slate-300 hover:bg-[#374151] transition-colors">
+          <button className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
             <TrendingUp className="h-4 w-4" />
             Performance Reports
           </button>

@@ -76,31 +76,31 @@ const bottlenecks = [
 const typeConfig = {
   critical: {
     icon: AlertCircle,
-    bg: 'bg-red-500/10',
-    border: 'border-red-500/30',
-    iconColor: 'text-red-500',
-    badge: 'bg-red-500',
+    bg: 'bg-error/10',
+    border: 'border-error/30',
+    iconColor: 'text-error',
+    badge: 'bg-error',
   },
   warning: {
     icon: AlertTriangle,
-    bg: 'bg-yellow-500/10',
-    border: 'border-yellow-500/30',
-    iconColor: 'text-yellow-500',
-    badge: 'bg-yellow-500',
+    bg: 'bg-warning/10',
+    border: 'border-warning/30',
+    iconColor: 'text-warning',
+    badge: 'bg-warning',
   },
   info: {
     icon: Clock,
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/30',
-    iconColor: 'text-blue-500',
-    badge: 'bg-blue-500',
+    bg: 'bg-info/10',
+    border: 'border-info/30',
+    iconColor: 'text-info',
+    badge: 'bg-info',
   },
 };
 
 const impactColors = {
-  high: 'text-red-400',
-  medium: 'text-yellow-400',
-  low: 'text-emerald-400',
+  high: 'text-error',
+  medium: 'text-warning',
+  low: 'text-success',
 };
 
 export function Alerts() {
@@ -111,46 +111,46 @@ export function Alerts() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">Alerts & Bottlenecks</h1>
-        <p className="text-sm text-slate-400 mt-1">Issues requiring your attention</p>
+        <h1 className="text-2xl font-semibold text-foreground">Alerts & Bottlenecks</h1>
+        <p className="text-sm text-muted-foreground mt-1">Issues requiring your attention</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+        <div className="rounded-xl border border-error/30 bg-error/10 p-4">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            <span className="text-sm text-slate-400">Critical</span>
+            <AlertCircle className="h-5 w-5 text-error" />
+            <span className="text-sm text-muted-foreground">Critical</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{criticalCount}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{criticalCount}</p>
         </div>
-        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-yellow-500" />
-            <span className="text-sm text-slate-400">Warnings</span>
+            <AlertTriangle className="h-5 w-5 text-warning" />
+            <span className="text-sm text-muted-foreground">Warnings</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{warningCount}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{warningCount}</p>
         </div>
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+        <div className="rounded-xl border border-success/30 bg-success/10 p-4">
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-emerald-500" />
-            <span className="text-sm text-slate-400">Resolved Today</span>
+            <CheckCircle className="h-5 w-5 text-success" />
+            <span className="text-sm text-muted-foreground">Resolved Today</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">5</p>
+          <p className="text-2xl font-bold text-foreground mt-2">5</p>
         </div>
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-4">
+        <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-slate-400" />
-            <span className="text-sm text-slate-400">Bottlenecks</span>
+            <TrendingDown className="h-5 w-5 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Bottlenecks</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">{bottlenecks.length}</p>
+          <p className="text-2xl font-bold text-foreground mt-2">{bottlenecks.length}</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Active Alerts */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Active Alerts</h2>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Active Alerts</h2>
           <div className="space-y-3">
             {alerts.map((alert) => {
               const config = typeConfig[alert.type];
@@ -164,16 +164,16 @@ export function Alerts() {
                     <Icon className={`h-5 w-5 mt-0.5 ${config.iconColor}`} />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium text-white">{alert.title}</p>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium text-white ${config.badge}`}>
+                        <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium text-primary-foreground ${config.badge}`}>
                           {alert.type}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400 mb-2">{alert.description}</p>
+                      <p className="text-xs text-muted-foreground mb-2">{alert.description}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">{alert.timestamp}</span>
+                        <span className="text-xs text-muted-foreground">{alert.timestamp}</span>
                         {alert.actionLabel && (
-                          <button className="text-xs font-medium text-[#ff6b35] hover:underline">
+                          <button className="text-xs font-medium text-primary hover:underline">
                             {alert.actionLabel}
                           </button>
                         )}
@@ -187,19 +187,19 @@ export function Alerts() {
         </div>
 
         {/* Bottlenecks */}
-        <div className="rounded-xl border border-[#374151] bg-[#1a1f2e] p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Operational Bottlenecks</h2>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Operational Bottlenecks</h2>
           <div className="space-y-4">
             {bottlenecks.map((item) => (
-              <div key={item.id} className="rounded-lg bg-[#0f1419] p-4">
+              <div key={item.id} className="rounded-lg bg-background p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-white">{item.area}</span>
+                  <span className="text-sm font-medium text-foreground">{item.area}</span>
                   <span className={`text-xs font-medium capitalize ${impactColors[item.impact as keyof typeof impactColors]}`}>
                     {item.impact} impact
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mb-2">{item.issue}</p>
-                <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <p className="text-xs text-muted-foreground mb-2">{item.issue}</p>
+                <div className="flex items-center gap-2 text-xs text-success">
                   <CheckCircle className="h-3 w-3" />
                   <span>{item.suggestion}</span>
                 </div>
